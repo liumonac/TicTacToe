@@ -1,19 +1,42 @@
 package tsuruko.TicTacToe.view;
 
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import tsuruko.TicTacToe.MainApp;
 import tsuruko.TicTacToe.model.player;
+import tsuruko.TicTacToe.model.playerShape;
 
 public class GameBoardController {
     // Reference to the main application
     private MainApp mainApp;
     
+    private player player1;
+    private player player2;
+    private player currentPlayer;
+
+    public void createPlayers() {
+    	player1 = new player();
+    	player2 = new player("o", "Player 2");
+    	currentPlayer = player2;
+    }
+    
     public void setMainApp(MainApp mainApp) {
         this.mainApp = mainApp;
     }
+
+	public playerShape makeMove (int colIndex, int rowIndex) {
+    	if (currentPlayer == player1) {
+    		currentPlayer = player2;
+    	} else {
+    		currentPlayer = player1;
+    	}
+    	
+		return currentPlayer.makeMove(colIndex, rowIndex);
+	}
     
     @FXML
     private void gridClicked(MouseEvent event) {
@@ -22,22 +45,17 @@ public class GameBoardController {
         Integer colIndex = GridPane.getColumnIndex(source);
         Integer rowIndex = GridPane.getRowIndex(source);
 
-        System.out.printf("Mouse entered cell [%d, %d]%n", colIndex.intValue(), rowIndex.intValue());
-
         if (source.getChildren().isEmpty()) {
-	        player p = mainApp.getCurrentPlayer();
-	        
-	        source.getChildren().add(p.makeMove());
-	        /*
-	        if (colIndex.intValue() % 2 == 0) {
-		        source.getChildren().add(circle);
-	        } else {
-		        source.getChildren().add(x);
-	        }*/
-	        
+	        source.getChildren().add(makeMove(colIndex, rowIndex));
         } else {
-            System.out.printf("Box is alread filled!%n");
+        	playerShape pShape = (playerShape) source.getChildren().get(0);
+        	
+            Alert alert = new Alert(AlertType.ERROR);
+            alert.setTitle("Invalid Move");
+            alert.setHeaderText("Invalid Move");
+            alert.setContentText(pShape.getPlayer().getPlayerName() + " already filled that box!");
 
+            alert.showAndWait();
         }
     }
 }

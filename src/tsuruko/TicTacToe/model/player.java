@@ -1,64 +1,51 @@
 package tsuruko.TicTacToe.model;
 
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.scene.Node;
 
 public class player {
-	public static final int XSHAPE = 0;
-	public static final int CIRCLE = 1;
+	public static final String XSHAPE = "X";
+	public static final String CIRCLE = "O";
 	
-    private ObservableList<Node> playerMoves = FXCollections.observableArrayList();
+    private ObservableList<playerShape> playerMoves = FXCollections.observableArrayList();
 	
-
-	private int shapeUsed = 0;
-	private Node playerShape;
+    private String shapeUsed = "X";
+    private String playerName = "Player 1";
 
 	public player () {
-		playerShape = new xShape(100);
 		shapeUsed = XSHAPE;
 	}
 	
 	public player (String shapeChosen) {
 		if (shapeChosen.equals("O") || shapeChosen.equals("o")) {
 			shapeUsed = CIRCLE;
-
-			Circle circle = new Circle();
-	        circle.setRadius(50);
-	        circle.setFill(Color.WHITESMOKE);
-	        circle.setStroke(Color.BLACK);
-	        circle.setStrokeWidth(5);
-	        
-	        playerShape = circle;
 		} else {
 			shapeUsed = XSHAPE;
-			playerShape = new xShape(100);
 		}
+	}
+
+	public player (String shapeChosen, String playerName) {
+		if (shapeChosen.equals("O") || shapeChosen.equals("o")) {
+			shapeUsed = CIRCLE;
+		} else {
+			shapeUsed = XSHAPE;
+		}
+		this.playerName = playerName;
+	}
+	
+	public String getPlayerName () {
+		return playerName;
 	}
 	
 	public String getShapeUsed () {
-		if (shapeUsed == XSHAPE ) {
-			return "X";
-		} else {
-			return "O";
-		}
+		return shapeUsed;
 	}
-	
-	public Node makeMove () {
-		Node newShape;
-		if (shapeUsed == XSHAPE ) {
-			newShape = new xShape(100);
-		} else {
-			Circle circle = new Circle();
-	        circle.setRadius(50);
-	        circle.setFill(Color.WHITESMOKE);
-	        circle.setStroke(Color.BLACK);
-	        circle.setStrokeWidth(5);
-	        
-			newShape = circle;
-		}
+
+	public playerShape makeMove (int colIndex, int rowIndex) {
+		playerShape newShape = new playerShape(shapeUsed);
+		
+		newShape.setPlayer(this);
+
 		playerMoves.add(newShape);
 		return newShape;
 	}

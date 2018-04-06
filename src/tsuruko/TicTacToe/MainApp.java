@@ -2,7 +2,6 @@ package tsuruko.TicTacToe;
 
 import java.io.IOException;
 
-import tsuruko.TicTacToe.model.player;
 import tsuruko.TicTacToe.view.GameBoardController;
 import tsuruko.TicTacToe.view.RootLayoutController;
 import javafx.application.Application;
@@ -17,24 +16,6 @@ public class MainApp extends Application {
 	
     private Stage primaryStage;
     private BorderPane rootLayout;
-    private player player1;
-    private player player2;
-    private int currentPlayer = 1;
-    
-    public player getCurrentPlayer() {
-    	if (currentPlayer == 1) {
-    		currentPlayer = 2;
-    		return player1;
-    	} else {
-    		currentPlayer = 1;
-    		return player2;
-    	}
-    }
-    
-    public void createPlayers() {
-    	player1 = new player();
-    	player2 = new player("o");
-    }
     
     public void showGameBoard() {
         try {
@@ -49,6 +30,7 @@ public class MainApp extends Application {
             // Give the controller access to the main app.
             GameBoardController controller = loader.getController();
             controller.setMainApp(this);
+            controller.createPlayers();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -83,8 +65,6 @@ public class MainApp extends Application {
         initRootLayout();
         
         showGameBoard();
-        
-        createPlayers();
     }
 
 	public static void main(String[] args) {
