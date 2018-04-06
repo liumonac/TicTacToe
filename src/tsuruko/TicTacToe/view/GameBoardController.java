@@ -25,9 +25,9 @@ public class GameBoardController {
         System.out.printf("Mouse entered cell [%d, %d]%n", colIndex.intValue(), rowIndex.intValue());
 
         if (source.getChildren().isEmpty()) {
-	        player p = new player();
+	        player p = mainApp.getCurrentPlayer();
 	        
-	        source.getChildren().add(p.getShape());
+	        source.getChildren().add(p.makeMove());
 	        /*
 	        if (colIndex.intValue() % 2 == 0) {
 		        source.getChildren().add(circle);
