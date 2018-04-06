@@ -4,7 +4,7 @@
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
-<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.layout.StackPane?>
 
 <AnchorPane prefHeight="430.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tsuruko.TicTacToe.view.GameBoardController">
    <children>
@@ -20,19 +20,15 @@
           <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
-            <AnchorPane onMouseClicked="#gridClicked" GridPane.columnIndex="0" GridPane.rowIndex="0" >
-               <children>
-                  <Circle fill="#f5f5f5" layoutX="50.0" layoutY="65.0" radius="50.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="5.0" translateX="15.0" />
-               </children>
-            </AnchorPane>
-            <AnchorPane onMouseClicked="#gridClicked" GridPane.columnIndex="1" GridPane.rowIndex="0" />
-            <AnchorPane onMouseClicked="#gridClicked" GridPane.columnIndex="2" GridPane.rowIndex="0" />
-            <AnchorPane onMouseClicked="#gridClicked" GridPane.columnIndex="0" GridPane.rowIndex="1" />
-            <AnchorPane onMouseClicked="#gridClicked" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-            <AnchorPane onMouseClicked="#gridClicked" GridPane.columnIndex="2" GridPane.rowIndex="1" />
-            <AnchorPane onMouseClicked="#gridClicked" GridPane.columnIndex="0" GridPane.rowIndex="2" />
-            <AnchorPane onMouseClicked="#gridClicked" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-            <AnchorPane onMouseClicked="#gridClicked" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+            <StackPane onMouseClicked="#gridClicked" prefHeight="150.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+            <StackPane onMouseClicked="#gridClicked" prefHeight="150.0" prefWidth="200.0" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+            <StackPane onMouseClicked="#gridClicked" prefHeight="150.0" prefWidth="200.0" GridPane.columnIndex="2" GridPane.rowIndex="0" />
+            <StackPane onMouseClicked="#gridClicked" prefHeight="150.0" prefWidth="200.0" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+            <StackPane onMouseClicked="#gridClicked" prefHeight="150.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+            <StackPane onMouseClicked="#gridClicked" prefHeight="150.0" prefWidth="200.0" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+            <StackPane onMouseClicked="#gridClicked" prefHeight="150.0" prefWidth="200.0" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+            <StackPane onMouseClicked="#gridClicked" prefHeight="150.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+            <StackPane onMouseClicked="#gridClicked" prefHeight="150.0" prefWidth="200.0" GridPane.columnIndex="2" GridPane.rowIndex="2" />
          </children>
       </GridPane>
    </children>
