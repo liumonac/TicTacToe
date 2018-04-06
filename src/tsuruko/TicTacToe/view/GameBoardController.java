@@ -4,10 +4,8 @@ import javafx.fxml.FXML;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
 import tsuruko.TicTacToe.MainApp;
-import tsuruko.TicTacToe.model.xShape;
+import tsuruko.TicTacToe.model.player;
 
 public class GameBoardController {
     // Reference to the main application
@@ -27,19 +25,15 @@ public class GameBoardController {
         System.out.printf("Mouse entered cell [%d, %d]%n", colIndex.intValue(), rowIndex.intValue());
 
         if (source.getChildren().isEmpty()) {
-	        Circle circle = new Circle();
-	        circle.setRadius(50);
-	        circle.setFill(Color.WHITESMOKE);
-	        circle.setStroke(Color.BLACK);
-	        circle.setStrokeWidth(5);
-
-	        xShape x = new xShape (100);
-
+	        player p = new player();
+	        
+	        source.getChildren().add(p.getShape());
+	        /*
 	        if (colIndex.intValue() % 2 == 0) {
 		        source.getChildren().add(circle);
 	        } else {
 		        source.getChildren().add(x);
-	        }
+	        }*/
 	        
         } else {
             System.out.printf("Box is alread filled!%n");
