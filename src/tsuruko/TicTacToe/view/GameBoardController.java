@@ -48,8 +48,6 @@ public class GameBoardController {
     			child.getChildren().clear();
     		}
     	}
-    	
-    	mainApp.showgameChooserDialog();
     }
 
 	public playerShape takeTurn () {

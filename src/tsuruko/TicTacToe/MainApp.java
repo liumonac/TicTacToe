@@ -38,7 +38,6 @@ public class MainApp extends Application {
             gameController = loader.getController();
             gameController.setMainApp(this);
             gameController.setGameBoard(gameBoard.getChildren().get(0));
-            gameController.newGame();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -61,6 +60,7 @@ public class MainApp extends Application {
             // Set the person into the controller.
             gameChooserController controller = loader.getController();
             controller.setDialogStage(dialogStage);
+            controller.setMainApp(this);
 
             // Show the dialog and wait until the user closes it
             dialogStage.showAndWait();

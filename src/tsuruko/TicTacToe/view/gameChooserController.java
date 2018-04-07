@@ -18,11 +18,13 @@ public class gameChooserController {
 
     public void handlePlayer1() {
     	mainApp.getGameBoardController().setComputerPlayer(true);
+    	mainApp.getGameBoardController().newGame();
     	dialogStage.close();
     }
     
     public void handlePlayer2() {
     	mainApp.getGameBoardController().setComputerPlayer(false);
+    	mainApp.getGameBoardController().newGame();
     	dialogStage.close();
     }
 }
