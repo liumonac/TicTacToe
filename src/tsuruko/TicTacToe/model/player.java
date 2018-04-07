@@ -1,5 +1,7 @@
 package tsuruko.TicTacToe.model;
 
+import java.util.ArrayList;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -7,7 +9,7 @@ public class player {
 	public static final String XSHAPE = "X";
 	public static final String CIRCLE = "O";
 	
-    private ObservableList<playerShape> playerMoves = FXCollections.observableArrayList();
+    private ArrayList<intPair> playerMoves = new ArrayList<intPair>();
 	
     private String shapeUsed = "X";
     private String playerName = "Player 1";
@@ -46,9 +48,18 @@ public class player {
 		
 		newShape.setPlayer(this);
 
-		playerMoves.add(newShape);
+		playerMoves.add(new intPair(colIndex, rowIndex));
 		return newShape;
 	}
 	
+	public boolean equals (player p) {
+		if ( this.playerName.equals(p.getPlayerName())
+			 && this.shapeUsed.equals(p.getShapeUsed())
+			) {
+			return true;
+		}
+		
+		return false;
+	}
 	
 }

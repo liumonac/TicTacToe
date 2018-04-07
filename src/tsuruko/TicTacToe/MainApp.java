@@ -30,7 +30,7 @@ public class MainApp extends Application {
             // Give the controller access to the main app.
             GameBoardController controller = loader.getController();
             controller.setMainApp(this);
-            controller.createPlayers();
+            controller.newGame();
         } catch (IOException e) {
             e.printStackTrace();
         }
