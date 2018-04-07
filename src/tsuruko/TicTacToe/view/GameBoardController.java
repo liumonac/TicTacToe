@@ -1,5 +1,7 @@
 package tsuruko.TicTacToe.view;
 
+import java.util.Random;
+
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
@@ -38,7 +40,14 @@ public class GameBoardController {
     	player1 = new player();
     	player2 = new player("o", "Player 2");
     	
-    	currentPlayer = player2;
+    	Random rand = new Random();
+    	int whoFirst = rand.nextInt(100) + 1;
+    	
+    	if (whoFirst <= 50) {
+    		currentPlayer = player2;
+    	} else {
+    		currentPlayer = player1;
+    	}
     	
     	for (Node n : gameBoard.getChildren()) {
     		Integer colIndex = GridPane.getColumnIndex(n);
