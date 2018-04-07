@@ -8,8 +8,6 @@ import javafx.scene.shape.Circle;
 public class playerShape extends StackPane {
 	private Node myShape;
 	private player myPlayer;
-	private int colIdx;
-	private int rowIdx;
 	
 	playerShape() {
 		myShape = new xShape(100);
@@ -28,23 +26,6 @@ public class playerShape extends StackPane {
 		} else {
 			myShape = new xShape(100);
 		}
-		this.getChildren().add(myShape);
-	}
-	
-	playerShape(String shapeChosen, int colIdx, int rowIdx) {
-		if (shapeChosen.equals("O") || shapeChosen.equals("o")) {
-			Circle circle = new Circle();
-	        circle.setRadius(50);
-	        circle.setFill(Color.WHITESMOKE);
-	        circle.setStroke(Color.BLACK);
-	        circle.setStrokeWidth(5);
-	        
-	        myShape = circle;
-		} else {
-			myShape = new xShape(100);
-		}
-		this.colIdx = colIdx;
-		this.rowIdx = rowIdx;
 		this.getChildren().add(myShape);
 	}
 	
