@@ -91,14 +91,17 @@ public class GameBoardController {
                 newGame();
             }
             
-        	if (currentPlayer == player1) {
-        		currentPlayer = player2;
-        	} else {
-        		currentPlayer = player1;
-        	}
+	        	if (currentPlayer == player1) {
+	        		currentPlayer = player2;
+	        	} else {
+	        		currentPlayer = player1;
+	        	}
         	
         	whosTurn.setText(currentPlayer.getPlayerName() + "'s Turn (" + currentPlayer.getShapeUsed() + ")");
 
+            if (useComputerPlayer) {
+            	//TODO: computer AI
+            }
         } else {
         	playerShape pShape = (playerShape) cell.getChildren().get(0);
         	

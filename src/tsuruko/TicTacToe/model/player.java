@@ -4,7 +4,7 @@ public class player {
 	public static final String XSHAPE = "X";
 	public static final String CIRCLE = "O";
 
-    private String shapeUsed = "X";
+    protected String shapeUsed = "X";
     private String playerName = "Player 1";
 
 	public player () {
