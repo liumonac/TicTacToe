@@ -19,7 +19,7 @@ public class RootLayoutController {
     }
     
     public void handleNewGame() {
-    	mainApp.getGameBoardController().newGame();
+    	mainApp.showgameChooserDialog();
     }
     
     public void handleAbout() {

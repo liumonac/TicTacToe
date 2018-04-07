@@ -6,6 +6,7 @@ import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
@@ -19,17 +20,17 @@ public class GameBoardController {
     private player player1;
     private player player2;
     private player currentPlayer;
+    
+    @FXML
     GridPane gameBoard;
+    
     private boolean useComputerPlayer;
+    
+    @FXML
+    private Label whosTurn;
     
     public void setMainApp(MainApp mainApp) {
         this.mainApp = mainApp;
-    }
-    
-    public void setGameBoard (Node g) {
-    	if (g.getClass().equals(GridPane.class)) {
-    		gameBoard = (GridPane) g;
-    	}
     }
     
     public void setComputerPlayer (boolean ai) {
@@ -48,7 +49,9 @@ public class GameBoardController {
     	} else {
     		currentPlayer = player1;
     	}
-    	
+
+    	whosTurn.setText(currentPlayer.getPlayerName() + "'s Turn (" + currentPlayer.getShapeUsed() + ")");
+
     	for (Node n : gameBoard.getChildren()) {
     		Integer colIndex = GridPane.getColumnIndex(n);
     		
@@ -59,16 +62,6 @@ public class GameBoardController {
     	}
     }
 
-	public playerShape takeTurn () {
-    	if (currentPlayer == player1) {
-    		currentPlayer = player2;
-    	} else {
-    		currentPlayer = player1;
-    	}
-    	
-		return currentPlayer.takeTurn();
-	}
-    
     @FXML
     private void gridCellClicked(MouseEvent event) {
         StackPane cell = (StackPane) event.getSource() ;
@@ -76,18 +69,36 @@ public class GameBoardController {
         gameBoard = (GridPane) cell.getParent();
         
         if (cell.getChildren().isEmpty()) {
-        	cell.getChildren().add(takeTurn());
-	        
+        	cell.getChildren().add(currentPlayer.takeTurn());
+
             if (hasWon (currentPlayer)) {
                 Alert alert = new Alert(AlertType.INFORMATION);
-                alert.setTitle("We have a winner!");
+                alert.setTitle("TicTacToe");
                 alert.setHeaderText("Congratulations!");
-                alert.setContentText(currentPlayer.getPlayerName() + " has won!");
+            	if (useComputerPlayer) {
+            		if (currentPlayer.equals(player2)) {
+                        alert.setHeaderText("Too Bad!");
+                        alert.setContentText("You lost!");
+            		} else {
+            			alert.setContentText("You win!");
+            		}
+            	} else {
+                    alert.setContentText(currentPlayer.getPlayerName() + " wins!");
+            	}
 
                 alert.showAndWait();
                 
                 newGame();
             }
+            
+        	if (currentPlayer == player1) {
+        		currentPlayer = player2;
+        	} else {
+        		currentPlayer = player1;
+        	}
+        	
+        	whosTurn.setText(currentPlayer.getPlayerName() + "'s Turn (" + currentPlayer.getShapeUsed() + ")");
+
         } else {
         	playerShape pShape = (playerShape) cell.getChildren().get(0);
         	
@@ -109,6 +120,8 @@ public class GameBoardController {
             
             newGame();
         }
+        
+        
     }
     
     public boolean isDraw () {
