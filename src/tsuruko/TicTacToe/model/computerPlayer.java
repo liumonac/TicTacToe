@@ -2,6 +2,8 @@ package tsuruko.TicTacToe.model;
 
 import java.util.Random;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
@@ -142,6 +144,7 @@ public class computerPlayer extends player {
     			}
     		}
     	}
+    	
     	//check if we need to block the opponent
     	for (Node cell : gameBoard.getChildren()) {
     		if (cell.getClass() == StackPane.class) {
@@ -161,6 +164,7 @@ public class computerPlayer extends player {
     	}
     	
     	//Fork: Create an opportunity where the player has two threats to win (two non-blocked lines of 2).
+    	
     	//Blocking an opponent's fork: If there is only one possible fork for the opponent, the player should block it. Otherwise, the player should block any forks in any way that simultaneously allows them to create two in a row. Otherwise, the player should create a two in a row to force the opponent into defending, as long as it doesn't result in them creating a fork. For example, if "X" has two opposite corners and "O" has the center, "O" must not play a corner in order to win. (Playing a corner in this scenario creates a fork for "X" to win.)
     	
     	//Center: A player marks the center. (If it is the first move of the game, playing on a corner gives the second player more opportunities to make a mistake and may therefore be the better choice; however, it makes no difference between perfect players.)
@@ -171,10 +175,77 @@ public class computerPlayer extends player {
     	}
     	
     	//Opposite corner: If the opponent is in the corner, the player plays the opposite corner.
-    	//Empty corner: The player plays in a corner square.
-    	//Empty side: The player plays in a middle square on any of the 4 sides.
+    	//Add functionality to pick a random corner if multiple are already played by opponent
     	
-		//Placeholder: choose next empty cell in Grid Index order
+    	// 0 | 1 | 2
+    	// 3 | 4 | 5
+    	// 6 | 7 | 8
+    	
+    	ObservableList<StackPane> cornerCells = FXCollections.observableArrayList();
+    	cornerCells.add(((StackPane) gameBoard.getChildren().get(0)));
+    	cornerCells.add(((StackPane) gameBoard.getChildren().get(2)));
+    	cornerCells.add(((StackPane) gameBoard.getChildren().get(6)));
+    	cornerCells.add(((StackPane) gameBoard.getChildren().get(8)));
+    			
+    	//Empty corner: The player plays in a corner square.
+    	//Add functionality to pick a random corner if multiple are empty
+    	ObservableList<StackPane> emptyCornerCells = FXCollections.observableArrayList();
+    	movePicked = (StackPane) gameBoard.getChildren().get(0);
+    	if (movePicked.getChildren().isEmpty()) {
+    		emptyCornerCells.add(movePicked);
+    	}
+    	movePicked = (StackPane) gameBoard.getChildren().get(2);
+    	if (movePicked.getChildren().isEmpty()) {
+    		emptyCornerCells.add(movePicked);
+    	}
+    	movePicked = (StackPane) gameBoard.getChildren().get(6);
+    	if (movePicked.getChildren().isEmpty()) {
+    		emptyCornerCells.add(movePicked);
+    	}
+    	movePicked = (StackPane) gameBoard.getChildren().get(8);
+    	if (movePicked.getChildren().isEmpty()) {
+    		emptyCornerCells.add(movePicked);
+    	}
+    	
+    	if (emptyCornerCells.size() > 1) {
+    		int pickIdx = rand.nextInt(emptyCornerCells.size());
+    		emptyCornerCells.get(pickIdx).getChildren().add(this.takeTurn());
+    		return;
+    	} else if (emptyCornerCells.size() == 1) {
+    		emptyCornerCells.get(0).getChildren().add(this.takeTurn());
+    		return;
+    	}
+    	
+    	//Empty side: The player plays in a middle square on any of the 4 sides.
+    	//Add functionality to pick a random corner if multiple are empty
+    	ObservableList<StackPane> emptyEdgeCells = FXCollections.observableArrayList();
+    	movePicked = (StackPane) gameBoard.getChildren().get(1);
+    	if (movePicked.getChildren().isEmpty()) {
+    		emptyEdgeCells.add(movePicked);
+    	}
+    	movePicked = (StackPane) gameBoard.getChildren().get(3);
+    	if (movePicked.getChildren().isEmpty()) {
+    		emptyEdgeCells.add(movePicked);
+    	}
+    	movePicked = (StackPane) gameBoard.getChildren().get(5);
+    	if (movePicked.getChildren().isEmpty()) {
+    		emptyEdgeCells.add(movePicked);
+    	}
+    	movePicked = (StackPane) gameBoard.getChildren().get(7);
+    	if (movePicked.getChildren().isEmpty()) {
+    		emptyEdgeCells.add(movePicked);
+    	}
+    	
+    	if (emptyEdgeCells.size() > 1) {
+    		int pickIdx = rand.nextInt(emptyEdgeCells.size());
+    		emptyEdgeCells.get(pickIdx).getChildren().add(this.takeTurn());
+    		return;
+    	} else if (emptyEdgeCells.size() == 1) {
+    		emptyEdgeCells.get(0).getChildren().add(this.takeTurn());
+    		return;
+    	}
+    	
+		//Catch All: choose next empty cell in Grid Index order
     	for (Node cell : gameBoard.getChildren()) {
     		if (cell.getClass() == StackPane.class) {
     			StackPane child = (StackPane) cell;
