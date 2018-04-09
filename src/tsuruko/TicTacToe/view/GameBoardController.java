@@ -82,7 +82,7 @@ public class GameBoardController {
     private void processWinner() {
     	if (currentGame.hasWinner()) {
         	gameMessage.setHeaderText("Game Over!");
-        	gameMessage.setContentText(currentGame.getWinText());
+        	gameMessage.setContentText(currentGame.getWinMesage());
         	gameMessage.showAndWait();
         	
         	mainApp.showgameChooserDialog();

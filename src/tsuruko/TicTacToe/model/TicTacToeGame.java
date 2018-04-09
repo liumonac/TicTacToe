@@ -32,7 +32,11 @@ public class TicTacToeGame {
 											  new IntPair(1, 2),
 											  new IntPair(2, 1)};
 
-    
+    /*********************************************
+     * 
+     * Constructors
+     * 
+     *********************************************/
 	public TicTacToeGame() {
 		gameBoard = new GridPane();
 
@@ -59,6 +63,11 @@ public class TicTacToeGame {
     	}
 	}
 	
+    /*********************************************
+     * 
+     * General Game Functionality
+     * 
+     *********************************************/
     public void setComputerPlayer (boolean ai) {
     	useComputerPlayer = ai;
     	if (useComputerPlayer) {
@@ -72,20 +81,19 @@ public class TicTacToeGame {
 		return currentPlayer;
 	}
 	
+    public void toggleCurrentPlayer() {
+    	if (currentPlayer == player1) {
+    		currentPlayer = player2;
+    	} else {
+    		currentPlayer = player1;
+    	}
+    }
+    
 	public GridPane getGameBoard() {
 		return gameBoard;
 	}
 	
-	public void newGame() {
-		setWhoFirst();
-
-        if (useComputerPlayer && currentPlayer!= player1) {
-        	((computerPlayer) player2).makeMove(this, player1);
-        	currentPlayer = player1;
-        }
-	}
-	
-	public String getWinText() {
+	public String getWinMesage() {
     	if (useComputerPlayer) {
     		if (!currentPlayer.equals(player1)) {
     			return "You lost!";
@@ -95,6 +103,16 @@ public class TicTacToeGame {
     	} else {
     		return (currentPlayer.getPlayerName() + " wins!");
     	}
+	}
+	
+	public void newGame() {
+		setWhoFirst();
+
+        if (useComputerPlayer && currentPlayer!= player1) {
+        	GameCell cell = ((computerPlayer) player2).chooseMove(this, player1);
+        	cell.playPiece(currentPlayer);
+        	currentPlayer = player1;
+        }
 	}
 	
 	public void clearBoard() {
@@ -107,15 +125,12 @@ public class TicTacToeGame {
 			}
 		}
 	}
-	
-    public void toggleCurrentPlayer() {
-    	if (currentPlayer == player1) {
-    		currentPlayer = player2;
-    	} else {
-    		currentPlayer = player1;
-    	}
-    }
     
+    /*********************************************
+     * 
+     * Process Player Moves
+     * 
+     *********************************************/
     public boolean processHumanMove (GameCell cell) {   
     	if (cell.isEmpty()) {
     		cell.playPiece(currentPlayer);
@@ -133,43 +148,22 @@ public class TicTacToeGame {
     
     public boolean processComputerMove () {
     	if (useComputerPlayer && currentPlayer != player1) {
-    		GameCell cell = ((computerPlayer) currentPlayer).makeMove(this, player1);
+    		GameCell cell = ((computerPlayer) currentPlayer).chooseMove(this, player1);
     		cell.playPiece(currentPlayer);
     		return true;
     	}
     	return false;
     }
-
-    public boolean hasWinner () {
-    	//make independent of player
-    	if (playerHasWon(player1)) {
-    		currentPlayer = player1;
-    		return true;
-    	}
-    	
-    	if (playerHasWon(player2)) {
-    		currentPlayer = player2;
-    		return true;
-    	}
-
-    	return false;
-    }
-
-    public boolean isDraw () {
-    	for (Node n : gameBoard.getChildren()) {
-    		if (n.getClass() == GameCell.class) {
-    			GameCell cell = (GameCell) n;
-    			if (cell.isEmpty()) {
-    				return false;
-    			}
-    		}
-    	}
-    	return true;
-    }
     
-	// 0,0 | 0,1 | 0,2        0 | 1 | 2
-	// 1,0 | 1,1 | 1,2		  3 | 4 | 5
-	// 2,0 | 2,1 | 2,2	      6 | 7 | 8
+    /*********************************************
+     * 
+     * Game Cell Getters
+     * 
+     *********************************************/
+    public GameCell getGameCell (IntPair coordinates) {
+    	return getGameCell(coordinates.getX(), coordinates.getY());
+    }
+
     public GameCell getGameCell (int row, int column) {
     	GameCell result = null;
     	
@@ -187,10 +181,6 @@ public class TicTacToeGame {
         return result;
     }
     
-    public GameCell getGameCell (IntPair coordinates) {
-    	return getGameCell(coordinates.getX(), coordinates.getY());
-    }
-
     public IntPair getOppositeCell (IntPair coordinates) {
     	IntPair result = null;
     	
@@ -231,18 +221,24 @@ public class TicTacToeGame {
     	return result;
     }
     
-    public ArrayList<IntPair> getEmptyCells (ArrayList<IntPair> cellList) {
-    	ArrayList<IntPair> filterList = new ArrayList<>();
-    	
-    	for (IntPair coordinates : cellList) {
-    		GameCell cell = getGameCell (0,0);
-    		if (cell.isEmpty()) {
-    			filterList.add(coordinates);
+/*********************************************
+ * 
+ * Check for Empty Cells in Game Board grid
+ * 
+ *********************************************/
+    public boolean boardIsEmpty() {
+    	for (Node n : gameBoard.getChildren()) {
+    		if (n.getClass() == GameCell.class) {
+    			GameCell cell = (GameCell) n;
+
+    			if (!cell.isEmpty()) {
+    				return false;
+    			}
     		}
     	}
-    	return filterList;
+    	return true;
     }
-    
+
     public ArrayList<IntPair> getEmptyCells () {
     	ArrayList<IntPair> emptyCells = new ArrayList<>();
     	
@@ -256,6 +252,18 @@ public class TicTacToeGame {
 		}
 		
 		return emptyCells;
+    }
+    
+    public ArrayList<IntPair> getEmptyCells (ArrayList<IntPair> cellList) {
+    	ArrayList<IntPair> filterList = new ArrayList<>();
+    	
+    	for (IntPair coordinates : cellList) {
+    		GameCell cell = getGameCell (0,0);
+    		if (cell.isEmpty()) {
+    			filterList.add(coordinates);
+    		}
+    	}
+    	return filterList;
     }
     
     public ArrayList<IntPair> getEmptyCorners () {
@@ -284,19 +292,37 @@ public class TicTacToeGame {
 		return emptyEdges;
     }
     
-    public boolean boardIsEmpty() {
+    /*********************************************
+     * 
+     * Check for this game's winner status
+     * 
+     *********************************************/
+    public boolean isDraw () {
     	for (Node n : gameBoard.getChildren()) {
     		if (n.getClass() == GameCell.class) {
     			GameCell cell = (GameCell) n;
-
-    			if (!cell.isEmpty()) {
+    			if (cell.isEmpty()) {
     				return false;
     			}
     		}
     	}
     	return true;
     }
+    
+    public boolean hasWinner () {
+    	//make independent of player
+    	if (playerHasWon(player1)) {
+    		currentPlayer = player1;
+    		return true;
+    	}
+    	
+    	if (playerHasWon(player2)) {
+    		currentPlayer = player2;
+    		return true;
+    	}
 
+    	return false;
+    }
     
     public boolean playerHasWon (player p) {
     	//check rows
@@ -379,7 +405,11 @@ public class TicTacToeGame {
     }
     
     
-    //private helper functions
+    /*********************************************
+     * 
+     * Private Helper Functions
+     * 
+     *********************************************/
     private void setWhoFirst () {
     	Random rand = new Random();
     	int whoFirst = rand.nextInt(2);
