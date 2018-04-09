@@ -5,16 +5,19 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 
-public class playerShape extends StackPane {
+public class gamePiece extends StackPane {
 	private Node myShape;
 	private player myPlayer;
 	
-	playerShape() {
+	private int index;
+	
+	gamePiece() {
 		myShape = new xShape(100);
 		this.getChildren().add(myShape);
+		index = 0;
 	}
 	
-	playerShape(String shapeChosen) {
+	gamePiece(String shapeChosen, int idx) {
 		if (shapeChosen.equals("O") || shapeChosen.equals("o")) {
 			Circle circle = new Circle();
 	        circle.setRadius(50);
@@ -27,6 +30,7 @@ public class playerShape extends StackPane {
 			myShape = new xShape(100);
 		}
 		this.getChildren().add(myShape);
+		this.index = idx;
 	}
 	
 	public void setPlayer (player p) {
@@ -35,5 +39,13 @@ public class playerShape extends StackPane {
 	
 	public player getPlayer () {
 		return myPlayer;
+	}
+	
+	public boolean playedBy (player p) {
+		return myPlayer.equals(p);
+	}
+	
+	public int getCellNum () {
+		return index;
 	}
 }

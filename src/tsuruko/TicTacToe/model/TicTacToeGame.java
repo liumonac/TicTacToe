@@ -97,14 +97,14 @@ public class TicTacToeGame {
     
     public void processHumanMove (StackPane cell) {
     	if (isValidMove(cell) && currentPlayer == player1) {
-    		cell.getChildren().add(currentPlayer.takeTurn());
+    		cell.getChildren().add(currentPlayer.playPiece());
     	} else {
-        	playerShape pShape = (playerShape) cell.getChildren().get(0);
+        	gamePiece piece = (gamePiece) cell.getChildren().get(0);
         	
             Alert alert = new Alert(AlertType.ERROR);
             alert.setTitle("TicTacToe");
             alert.setHeaderText("Invalid Move");
-            alert.setContentText(pShape.getPlayer().getPlayerName() + " already filled that box!");
+            alert.setContentText(piece.getPlayer().getPlayerName() + " already filled that box!");
 
             alert.showAndWait();
     	}

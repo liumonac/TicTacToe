@@ -39,8 +39,8 @@ public class player {
 		return shapeUsed;
 	}
 
-	public playerShape takeTurn () {
-		playerShape newShape = new playerShape(shapeUsed);
+	public gamePiece playPiece (int cellNum) {
+		gamePiece newShape = new gamePiece(shapeUsed, cellNum);
 		newShape.setPlayer(this);
 
 		return newShape;
@@ -65,7 +65,7 @@ public class player {
     			StackPane cell = (StackPane) gameBoard.getChildren().get(i*3+j);
     			
     			if (!cell.getChildren().isEmpty()) {
-    				playerShape filledShape = (playerShape) cell.getChildren().get(0);
+    				gamePiece filledShape = (gamePiece) cell.getChildren().get(0);
     				
     				if (filledShape.getPlayer().equals(this)) {
     					cellsInARow += 1;
@@ -86,7 +86,7 @@ public class player {
     			StackPane cell = (StackPane) gameBoard.getChildren().get(i*3+j);
     			
     			if (!cell.getChildren().isEmpty()) {
-    				playerShape filledShape = (playerShape) cell.getChildren().get(0);
+    				gamePiece filledShape = (gamePiece) cell.getChildren().get(0);
     				
     				if (filledShape.getPlayer().equals(this)) {
     					cellsInARow += 1;
@@ -107,7 +107,7 @@ public class player {
 			StackPane cell = (StackPane) gameBoard.getChildren().get(i*3+i);
 			
 			if (!cell.getChildren().isEmpty()) {
-				playerShape filledShape = (playerShape) cell.getChildren().get(0);
+				gamePiece filledShape = (gamePiece) cell.getChildren().get(0);
 				
 				if (filledShape.getPlayer().equals(this)) {
 					cellsInARow += 1;
@@ -128,7 +128,7 @@ public class player {
 			StackPane cell = (StackPane) gameBoard.getChildren().get(i);
 			
 			if (!cell.getChildren().isEmpty()) {
-				playerShape filledShape = (playerShape) cell.getChildren().get(0);
+				gamePiece filledShape = (gamePiece) cell.getChildren().get(0);
 				
 				if (filledShape.getPlayer().equals(this)) {
 					cellsInARow += 1;
