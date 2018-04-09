@@ -1,149 +1,76 @@
 package tsuruko.TicTacToe.view;
 
-import java.util.Random;
-
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
-import tsuruko.TicTacToe.MainApp;
-import tsuruko.TicTacToe.model.computerPlayer;
-import tsuruko.TicTacToe.model.player;
-import tsuruko.TicTacToe.model.playerShape;
+import tsuruko.TicTacToe.model.TicTacToeGame;
 
 public class GameBoardController {
-    private MainApp mainApp;
     
-    private player player1;
-    private player player2;
-    private player currentPlayer;
+    TicTacToeGame currentGame;
     
     Alert gameMessage = new Alert(AlertType.INFORMATION);
     
     @FXML
     GridPane gameBoard;
     
-    private boolean useComputerPlayer;
-    
     @FXML
     private Label whosTurn;
     
-    public void setMainApp(MainApp mainApp) {
-        this.mainApp = mainApp;
+    public void initalize() {
+    	currentGame = new TicTacToeGame(gameBoard);
+    	newGame();
     }
-    
-    public void setComputerPlayer (boolean ai) {
-    	useComputerPlayer = ai;
-    }
-    
-    public void newGame() {
-    	player1 = new player();
-    	player2 = new player("o", "Player 2");
 
-    	if (useComputerPlayer) {
-    		player2 = new computerPlayer();
-    	}
+    public void newGame() {   
+    	currentGame.clearBoard();
+    	currentGame.newGame();
     	
-    	Random rand = new Random();
-    	int whoFirst = rand.nextInt(2);
+    	whosTurn.setText(  currentGame.getCurrentPlayer().getPlayerName() + "'s Turn "
+    					 + "(" + currentGame.getCurrentPlayer().getShapeUsed() + ")");
     	
-    	if (whoFirst == 0) {
-    		currentPlayer = player2;
-    	} else {
-    		currentPlayer = player1;
-    	}
-        
-    	whosTurn.setText(currentPlayer.getPlayerName() + "'s Turn (" + currentPlayer.getShapeUsed() + ")");
-
-    	for (Node n : gameBoard.getChildren()) {
-    		Integer colIndex = GridPane.getColumnIndex(n);
-    		
-    		if (colIndex != null) {
-    			StackPane child = (StackPane) n;
-    			child.getChildren().clear();
-    		}
-    	}
-
-    	currentPlayer = player1;
-    	whosTurn.setText(currentPlayer.getPlayerName() + "'s Turn (" + currentPlayer.getShapeUsed() + ")");
-
-    	
-        if (useComputerPlayer && currentPlayer!= player1) {
-        	((computerPlayer) player2).makeMove(gameBoard, player1);
-        	currentPlayer = player1;
-        }
-        
     	gameMessage.setTitle("TicTacToe");
     }
     
-    private void toggleCurrentPlayer() {
-    	if (currentPlayer == player1) {
-    		currentPlayer = player2;
-    	} else {
-    		currentPlayer = player1;
-    	}
-    	whosTurn.setText(currentPlayer.getPlayerName() + "'s Turn (" + currentPlayer.getShapeUsed() + ")");
-    }
-
-    private Boolean isValidMove (StackPane cell) {
-    	if (cell.getChildren().isEmpty()) {
-    		return true;
-    	}
-    	return false;
+    public void newGame(boolean useComputer) {   
+    	currentGame.clearBoard();
+    	currentGame.setComputerPlayer(useComputer);
+    	currentGame.newGame();
+    	
+    	whosTurn.setText(  currentGame.getCurrentPlayer().getPlayerName() + "'s Turn "
+    					 + "(" + currentGame.getCurrentPlayer().getShapeUsed() + ")");
+    	
+    	gameMessage.setTitle("TicTacToe");
     }
     
     @FXML
     private void gridCellClicked(MouseEvent event) {
         StackPane clickedCell = (StackPane) event.getSource() ;
-
-        gameBoard = (GridPane) clickedCell.getParent();
-        
-        if (isValidMove(clickedCell)) {
-        	if (useComputerPlayer) {
-        		if (currentPlayer == player1) {
-                	clickedCell.getChildren().add(player1.takeTurn());
-
-                    if (player1.hasWon(gameBoard)) {
-                    	showWinMessage();
-                        newGame();
-                    } else {
-                    	toggleCurrentPlayer();
-                    	
-                    	((computerPlayer) currentPlayer).makeMove(gameBoard, player1);
-                        if (currentPlayer.hasWon(gameBoard)) {
-                        	showWinMessage();
-                            newGame();
-                        } else {
-                        	toggleCurrentPlayer();
-                        }
-                    }
-        		}
-        	} else {
-            	clickedCell.getChildren().add(currentPlayer.takeTurn());
-
-                if (currentPlayer.hasWon(gameBoard)) {
-                	showWinMessage();
-                    newGame();
-                } else {
-                	toggleCurrentPlayer();
-                }
-        	}
-        } else {
-        	playerShape pShape = (playerShape) clickedCell.getChildren().get(0);
+    
+    	currentGame.processHumanMove(clickedCell);
+    	processWinner();
+    	
+    	currentGame.processComputerMove();
+    	processWinner();
+    }
+    
+    private void processWinner() {
+    	if (currentGame.hasWinner()) {
+        	gameMessage.setHeaderText("Game Over!");
         	
-            Alert alert = new Alert(AlertType.ERROR);
-            alert.setTitle("TicTacToe");
-            alert.setHeaderText("Invalid Move");
-            alert.setContentText(pShape.getPlayer().getPlayerName() + " already filled that box!");
+        	gameMessage.setContentText(currentGame.getWinText());
 
-            alert.showAndWait();
+        	gameMessage.showAndWait();
+            newGame();
+        } else {
+        	currentGame.toggleCurrentPlayer();
         }
         
-        if (isDraw()) {
+        if (currentGame.isDraw()) {
             gameMessage.setHeaderText("No Winner!");
             gameMessage.setContentText("It's a draw!");
 
@@ -151,34 +78,6 @@ public class GameBoardController {
             
             newGame();
         }
-    }
-    
-    private void showWinMessage() {
-    	gameMessage.setHeaderText("Congratulations!");
-    	if (useComputerPlayer) {
-    		if (!currentPlayer.equals(player1)) {
-    			gameMessage.setHeaderText("Too Bad!");
-    			gameMessage.setContentText("You lost!");
-    		} else {
-    			gameMessage.setContentText("You win!");
-    		}
-    	} else {
-    		gameMessage.setContentText(currentPlayer.getPlayerName() + " wins!");
-    	}
-
-    	gameMessage.showAndWait();
-    }
-    
-    public boolean isDraw () {
-    	for (Node cell : gameBoard.getChildren()) {
-    		if (cell.getClass() == StackPane.class) {
-    			StackPane child = (StackPane) cell;
-    			if (child.getChildren().isEmpty()) {
-    				return false;
-    			}
-    		}
-    	}
-    	return true;
     }
 
 }
