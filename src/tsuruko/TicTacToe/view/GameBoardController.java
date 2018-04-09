@@ -5,12 +5,15 @@ import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Label;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.StackPane;
 import tsuruko.TicTacToe.model.TicTacToeGame;
+import tsuruko.TicTacToe.MainApp;
+import tsuruko.TicTacToe.model.GameCell;
 
 public class GameBoardController {
+    
+    // Reference to the main application
+    private MainApp mainApp;
     
     TicTacToeGame currentGame;
     
@@ -22,13 +25,39 @@ public class GameBoardController {
     @FXML
     private Label whosTurn;
     
-    public void initalize() {
-
+    public void initalize(MainApp mainApp) {
+    	this.mainApp = mainApp;
+        for (int i = 0 ; i < 3 ; i++) {
+            for (int j = 0; j < 3; j++) {
+                addCell(i, j);
+            }
+        }
     	currentGame = new TicTacToeGame(gameBoard);
     	newGame();
     }
 
-
+    
+    private void addCell (int rowIndex, int colIndex) {
+        GameCell cell = new GameCell();
+        
+        cell.setOnMouseClicked(event -> {
+        	Node source = (Node) event.getSource();
+        	if (source.getClass() == GameCell.class) { 
+	            GameCell clickedCell = (GameCell) event.getSource();
+	            
+	        	if (currentGame.processHumanMove(clickedCell)) {
+	        		processWinner();
+		        	if (currentGame.processComputerMove()) {
+		        		processWinner();
+		        	}
+	        	}
+	        	
+        	}
+        });
+        
+        gameBoard.add(cell, colIndex, rowIndex);
+    }
+    
     public void newGame() {   
     	currentGame.clearBoard();
     	currentGame.newGame();
@@ -49,45 +78,26 @@ public class GameBoardController {
     	
     	gameMessage.setTitle("TicTacToe");
     }
-    
-    @FXML
-    private void gridCellClicked(MouseEvent event) {
-        StackPane clickedCell = (StackPane) event.getSource() ;
-    
-    	currentGame.processHumanMove(clickedCell);
-    	processWinner();
-    	
-    	currentGame.processComputerMove();
-    	processWinner();
-    }
-    
-    @FXML
-    private void testClick( MouseEvent event) {
-        Node source = (Node)event.getSource() ;
-        Integer colIndex = GridPane.getColumnIndex(source);
-        Integer rowIndex = GridPane.getRowIndex(source);
-        System.out.printf("Mouse entered cell [%d, %d]%n", colIndex.intValue(), rowIndex.intValue());
-    }
-    
+
     private void processWinner() {
     	if (currentGame.hasWinner()) {
         	gameMessage.setHeaderText("Game Over!");
-        	
         	gameMessage.setContentText(currentGame.getWinText());
-
         	gameMessage.showAndWait();
-            newGame();
+        	
+        	mainApp.showgameChooserDialog();
         } else {
         	currentGame.toggleCurrentPlayer();
+        	whosTurn.setText(  currentGame.getCurrentPlayer().getPlayerName() + "'s Turn "
+					 + "(" + currentGame.getCurrentPlayer().getShapeUsed() + ")");
         }
         
         if (currentGame.isDraw()) {
             gameMessage.setHeaderText("No Winner!");
             gameMessage.setContentText("It's a draw!");
-
             gameMessage.showAndWait();
             
-            newGame();
+            mainApp.showgameChooserDialog();
         }
     }
 

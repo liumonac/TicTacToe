@@ -1,7 +1,8 @@
 package tsuruko.TicTacToe.model;
 
+import javafx.collections.ObservableList;
+import javafx.scene.Node;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.StackPane;
 
 public class player {
 	public static final String XSHAPE = "X";
@@ -39,8 +40,8 @@ public class player {
 		return shapeUsed;
 	}
 
-	public gamePiece playPiece (int cellNum) {
-		gamePiece newShape = new gamePiece(shapeUsed, cellNum);
+	public GameCell playPiece (int cellNum) {
+		GameCell newShape = new GameCell(shapeUsed, cellNum);
 		newShape.setPlayer(this);
 
 		return newShape;
@@ -55,94 +56,4 @@ public class player {
 		
 		return false;
 	}
-
-    public boolean hasWon (GridPane gameBoard) {
-    	//check rows
-    	int cellsInARow = 0;
-    	for (int i = 0; i < 3; i++) {
-    		cellsInARow = 0;
-    		for (int j = 0; j < 3; j++) {
-    			StackPane cell = (StackPane) gameBoard.getChildren().get(i*3+j);
-    			
-    			if (!cell.getChildren().isEmpty()) {
-    				gamePiece filledShape = (gamePiece) cell.getChildren().get(0);
-    				
-    				if (filledShape.getPlayer().equals(this)) {
-    					cellsInARow += 1;
-    				} else {
-    					cellsInARow = 0;
-    				}
-    			}
-    		}
-    		if (cellsInARow == 3) {
-    			return true;
-    		}
-    	}
-
-    	//check columns
-    	for (int j = 0; j < 3; j++) {
-    		cellsInARow = 0;
-    		for (int i = 0; i < 3; i++) {
-    			StackPane cell = (StackPane) gameBoard.getChildren().get(i*3+j);
-    			
-    			if (!cell.getChildren().isEmpty()) {
-    				gamePiece filledShape = (gamePiece) cell.getChildren().get(0);
-    				
-    				if (filledShape.getPlayer().equals(this)) {
-    					cellsInARow += 1;
-    				} else {
-    					cellsInARow = 0;
-    				}
-    			}
-    		}
-    		if (cellsInARow == 3) {
-    			return true;
-    		}
-    	}
-
-    	//check left-right diagonal
-    	//(0,0), (1,1), (2,2)
-		cellsInARow = 0;
-    	for (int i = 0; i < 3; i++) {
-			StackPane cell = (StackPane) gameBoard.getChildren().get(i*3+i);
-			
-			if (!cell.getChildren().isEmpty()) {
-				gamePiece filledShape = (gamePiece) cell.getChildren().get(0);
-				
-				if (filledShape.getPlayer().equals(this)) {
-					cellsInARow += 1;
-				} else {
-					cellsInARow = 0;
-				}
-			}
-
-    		if (cellsInARow == 3) {
-    			return true;
-    		}
-    	}
-    	
-    	//check right-left diagonal
-    	//(0,2)=2, (1,1)=4, (2, 0)=6
-		cellsInARow = 0;
-    	for (int i = 2; i < 7; i+=2) {
-			StackPane cell = (StackPane) gameBoard.getChildren().get(i);
-			
-			if (!cell.getChildren().isEmpty()) {
-				gamePiece filledShape = (gamePiece) cell.getChildren().get(0);
-				
-				if (filledShape.getPlayer().equals(this)) {
-					cellsInARow += 1;
-				} else {
-					cellsInARow = 0;
-				}
-			}
-
-    		if (cellsInARow == 3) {
-    			return true;
-    		}
-    	}
-    
-        return false;
-        	
-    }
 }

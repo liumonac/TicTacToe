@@ -2,11 +2,11 @@ package tsuruko.TicTacToe.model;
 
 import java.util.Random;
 
+import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.StackPane;
 
 public class TicTacToeGame {
 	private GridPane gameBoard;
@@ -57,11 +57,15 @@ public class TicTacToeGame {
 		return currentPlayer;
 	}
 	
+	public GridPane getGameBoard() {
+		return gameBoard;
+	}
+	
 	public void newGame() {
 		setWhoFirst();
-		
+
         if (useComputerPlayer && currentPlayer!= player1) {
-        	((computerPlayer) player2).makeMove(gameBoard, player1);
+        	((computerPlayer) player2).makeMove(this, player1);
         	currentPlayer = player1;
         }
 	}
@@ -79,12 +83,14 @@ public class TicTacToeGame {
 	}
 	
 	public void clearBoard() {
-    	for (Node n : gameBoard.getChildren()) {
-    		if (n.getClass() == StackPane.class ) {
-    			StackPane child = (StackPane) n;
-    			child.getChildren().clear();
-    		}
-    	}
+		for (int i = 0; i < 3; i++) {
+			for (int j = 0; j < 3; j++) {
+				GameCell cellPicked = getGameCell(i, j);
+    			if (!cellPicked.isEmpty()) {
+    				cellPicked.clearPiece();
+    			}
+			}
+		}
 	}
 	
     public void toggleCurrentPlayer() {
@@ -95,59 +101,156 @@ public class TicTacToeGame {
     	}
     }
     
-    public void processHumanMove (StackPane cell) {
-        Integer colIndex = GridPane.getColumnIndex(cell);
-        Integer rowIndex = GridPane.getRowIndex(cell);
-        
-        int idx = rowIndex*3 + colIndex;
-        
-    	if (isValidMove(cell) && currentPlayer == player1) {
-    		cell.getChildren().add(currentPlayer.playPiece(idx));
+    public boolean processHumanMove (GameCell cell) {   
+    	if (cell.isEmpty()) {
+    		cell.playPiece(currentPlayer);
+    		return true;
     	} else {
-        	gamePiece piece = (gamePiece) cell.getChildren().get(0);
-        	
             Alert alert = new Alert(AlertType.ERROR);
             alert.setTitle("TicTacToe");
             alert.setHeaderText("Invalid Move");
-            alert.setContentText(piece.getPlayer().getPlayerName() + " already filled that box!");
+            alert.setContentText(cell.getPlayer().getPlayerName() + " already filled that box!");
 
             alert.showAndWait();
     	}
+    	return false;
     }
     
-    public void processComputerMove () {
+    public boolean processComputerMove () {
     	if (useComputerPlayer && currentPlayer != player1) {
-    		((computerPlayer) currentPlayer).makeMove(gameBoard, player1);
+    		((computerPlayer) currentPlayer).makeMove(this, player1);
+    		return true;
     	}
-    	
+    	return false;
     }
-    
+
     public boolean hasWinner () {
     	//make independent of player
-    	if (player1.hasWon(gameBoard)) {
+    	if (playerHasWon(player1)) {
     		currentPlayer = player1;
     		return true;
     	}
     	
-    	if (player2.hasWon(gameBoard)) {
+    	if (playerHasWon(player2)) {
     		currentPlayer = player2;
     		return true;
     	}
 
     	return false;
     }
-    
+
     public boolean isDraw () {
-    	for (Node cell : gameBoard.getChildren()) {
-    		if (cell.getClass() == StackPane.class) {
-    			StackPane child = (StackPane) cell;
-    			if (child.getChildren().isEmpty()) {
+    	for (Node n : gameBoard.getChildren()) {
+    		if (n.getClass() == GameCell.class) {
+    			GameCell cell = (GameCell) n;
+    			if (cell.isEmpty()) {
     				return false;
     			}
     		}
     	}
     	return true;
     }
+    
+	// 0,0 | 0,1 | 0,2        0 | 1 | 2
+	// 1,0 | 1,1 | 1,2		  3 | 4 | 5
+	// 2,0 | 2,1 | 2,2	      6 | 7 | 8
+    public GameCell getGameCell (int row, int column) {
+    	GameCell result = null;
+    	
+        ObservableList<Node> childrens = gameBoard.getChildren();
+
+        for (Node node : childrens) {
+            if (	   node.getClass() == GameCell.class
+            		&& GridPane.getRowIndex(node) == row 
+            		&& GridPane.getColumnIndex(node) == column) {
+                result = (GameCell) node;
+                break;
+            }
+        }
+
+        return result;
+    }
+    
+    public boolean playerHasWon (player p) {
+    	//check rows
+    	int cellsInARow = 0;
+    	for (int i = 0; i < 3; i++) {
+    		cellsInARow = 0;
+    		for (int j = 0; j < 3; j++) {
+    			GameCell cell = getGameCell(i, j);
+    			
+    			if (!cell.isEmpty() && cell.isPlayedBy(p)) {
+    				cellsInARow += 1;
+    			} else {
+    				cellsInARow = 0;
+    			}
+    		}
+    		if (cellsInARow == 3) {
+    			return true;
+    		}
+    	}
+
+    	//check columns
+    	for (int j = 0; j < 3; j++) {
+    		cellsInARow = 0;
+    		for (int i = 0; i < 3; i++) {
+    			GameCell cell = getGameCell(i, j);
+    			
+    			if (!cell.isEmpty() && cell.isPlayedBy(p)) {
+    				cellsInARow += 1;
+    			} else {
+    				cellsInARow = 0;
+    			}
+    		}
+    		if (cellsInARow == 3) {
+    			return true;
+    		}
+    	}
+
+    	//check left-right diagonal
+    	//(0,0), (1,1), (2,2)
+		cellsInARow = 0;
+    	for (int i = 0; i < 3; i++) {
+    		GameCell cell = getGameCell(i, i);
+    		
+    		if (!cell.isEmpty() && cell.isPlayedBy(p)) {
+    			cellsInARow += 1;
+    		} else {
+    			cellsInARow = 0;
+    		}
+
+    		if (cellsInARow == 3) {
+    			return true;
+    		}
+    	}
+    	
+    	//check right-left diagonal
+		cellsInARow = 0;
+		GameCell cell = getGameCell(0, 2);
+		if (!cell.isEmpty() && cell.isPlayedBy(p)) {
+			cellsInARow += 1;
+		} else {
+			cellsInARow = 0;
+		}
+		cell = getGameCell(1, 1);
+		if (!cell.isEmpty() && cell.isPlayedBy(p)) {
+			cellsInARow += 1;
+		} else {
+			cellsInARow = 0;
+		}
+		cell = getGameCell(2, 0);
+		if (!cell.isEmpty() && cell.getPlayer().equals(p)) {
+			cellsInARow += 1;
+		} else {
+			cellsInARow = 0;
+		}
+		if (cellsInARow == 3) {
+			return true;
+		}
+
+        return false;	
+    }
+    
     
     //private helper functions
     private void setWhoFirst () {
@@ -159,13 +262,6 @@ public class TicTacToeGame {
     	} else {
     		currentPlayer = player1;
     	}
-    }
-    
-    private Boolean isValidMove (StackPane cell) {
-    	if (cell.getChildren().isEmpty()) {
-    		return true;
-    	}
-    	return false;
     }
     
 }
