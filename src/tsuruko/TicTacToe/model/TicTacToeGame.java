@@ -1,5 +1,6 @@
 package tsuruko.TicTacToe.model;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 import javafx.collections.ObservableList;
@@ -17,6 +18,20 @@ public class TicTacToeGame {
     
     private boolean useComputerPlayer;
     
+	//Grid Indexes
+	// 0,0 | 0,1 | 0,2        0 | 1 | 2
+	// 1,0 | 1,1 | 1,2		  3 | 4 | 5
+	// 2,0 | 2,1 | 2,2	      6 | 7 | 8
+    private IntPair[] corners = new IntPair[] { new IntPair(0, 0), 
+    											new IntPair(0, 2),
+    											new IntPair(2, 0),
+    											new IntPair(2, 2)};
+    
+    private IntPair[] edges = new IntPair[] { new IntPair(0, 1), 
+										  	  new IntPair(1, 0),
+											  new IntPair(1, 2),
+											  new IntPair(2, 1)};
+
     
 	public TicTacToeGame() {
 		gameBoard = new GridPane();
@@ -118,7 +133,8 @@ public class TicTacToeGame {
     
     public boolean processComputerMove () {
     	if (useComputerPlayer && currentPlayer != player1) {
-    		((computerPlayer) currentPlayer).makeMove(this, player1);
+    		GameCell cell = ((computerPlayer) currentPlayer).makeMove(this, player1);
+    		cell.playPiece(currentPlayer);
     		return true;
     	}
     	return false;
@@ -170,6 +186,117 @@ public class TicTacToeGame {
 
         return result;
     }
+    
+    public GameCell getGameCell (IntPair coordinates) {
+    	return getGameCell(coordinates.getX(), coordinates.getY());
+    }
+
+    public IntPair getOppositeCell (IntPair coordinates) {
+    	IntPair result = null;
+    	
+    	//edges
+    	if (coordinates.equals(0, 1)) {
+    		result = new IntPair (2, 1);
+    	}
+    	
+    	if (coordinates.equals(2, 1)) {
+    		result = new IntPair (0, 1);
+    	}
+    	
+    	if (coordinates.equals(1, 0)) {
+    		result = new IntPair (1, 2);
+    	}
+    	
+    	if (coordinates.equals(1, 2)) {
+    		result = new IntPair (1, 0);
+    	}
+
+    	//corners
+    	if (coordinates.equals(0, 0)) {
+    		result = new IntPair (2, 2);
+    	}
+    	
+    	if (coordinates.equals(2, 0)) {
+    		result = new IntPair (0, 2);
+    	}
+    	
+    	if (coordinates.equals(0, 2)) {
+    		result = new IntPair (2, 0);
+    	}
+    	
+    	if (coordinates.equals(2, 2)) {
+    		result = new IntPair (0, 0);
+    	}
+    	
+    	return result;
+    }
+    
+    public ArrayList<IntPair> getEmptyCells (ArrayList<IntPair> cellList) {
+    	ArrayList<IntPair> filterList = new ArrayList<>();
+    	
+    	for (IntPair coordinates : cellList) {
+    		GameCell cell = getGameCell (0,0);
+    		if (cell.isEmpty()) {
+    			filterList.add(coordinates);
+    		}
+    	}
+    	return filterList;
+    }
+    
+    public ArrayList<IntPair> getEmptyCells () {
+    	ArrayList<IntPair> emptyCells = new ArrayList<>();
+    	
+		for (int i = 0; i < 3; i++) {
+			for (int j = 0; j < 3; j++) {
+				GameCell cell = getGameCell(i, j);
+    			if (cell.isEmpty()) {
+    				emptyCells.add(new IntPair (i, j));
+    			}
+			}
+		}
+		
+		return emptyCells;
+    }
+    
+    public ArrayList<IntPair> getEmptyCorners () {
+    	ArrayList<IntPair> emptyCorners = new ArrayList<>();
+    	
+		for (int i = 0; i < corners.length; i++) {
+			GameCell cell = getGameCell(corners[i]);
+			if (cell.isEmpty()) {
+				emptyCorners.add(corners[i]);
+			}
+		}
+		
+		return emptyCorners;
+    }
+    
+    public ArrayList<IntPair> getEmptyEdges () {
+    	ArrayList<IntPair> emptyEdges = new ArrayList<>();
+    	
+		for (int i = 0; i < edges.length; i++) {
+			GameCell cell = getGameCell(edges[i]);
+			if (cell.isEmpty()) {
+				emptyEdges.add(edges[i]);
+			}
+		}
+		
+		return emptyEdges;
+    }
+    
+    public boolean boardIsEmpty() {
+    	for (Node n : gameBoard.getChildren()) {
+    		if (n.getClass() == GameCell.class) {
+    			GameCell cell = (GameCell) n;
+
+    			if (!cell.isEmpty()) {
+    				return false;
+    			}
+    		}
+    	}
+    	return true;
+    }
+
     
     public boolean playerHasWon (player p) {
     	//check rows
