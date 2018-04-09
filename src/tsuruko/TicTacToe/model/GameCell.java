@@ -12,6 +12,11 @@ public class GameCell extends StackPane {
 	
 	private int index;
 	
+    /*********************************************
+     * 
+     * Constructors
+     * 
+     *********************************************/
 	public GameCell() {
 		index = 0;
 		this.getChildren().clear();
@@ -28,10 +33,38 @@ public class GameCell extends StackPane {
 		this.index = idx;
 	}
 	
+    /*********************************************
+     * 
+     * Setters
+     * 
+     *********************************************/
 	public void setPlayer (player p) {
 		myPlayer = p;
 	}
 	
+	public void setColor (String color) {
+		//if myShape.getClass()
+		//myShape.setStroke(color);
+	}
+	
+    /*********************************************
+     * 
+     * Getters
+     * 
+     *********************************************/
+	public player getPlayer () {
+		return myPlayer;
+	}
+	
+	public int getCellNum () {
+		return index;
+	}
+	
+    /*********************************************
+     * 
+     * Main Functions
+     * 
+     *********************************************/
 	public void playPiece (player p) {
 		if (isEmpty) {
 			myPlayer = p;
@@ -45,10 +78,17 @@ public class GameCell extends StackPane {
 		}
 	}
 	
-	public player getPlayer () {
-		return myPlayer;
+	public void clearPiece() {
+		this.getChildren().clear();
+		this.isEmpty = true;
+		this.myPlayer = null;
 	}
 	
+    /*********************************************
+     * 
+     * Check State
+     * 
+     *********************************************/
 	public boolean isPlayedBy (player p) {
 		if (myPlayer == null) {
 			return false;
@@ -56,20 +96,16 @@ public class GameCell extends StackPane {
 		return myPlayer.equals(p);
 	}
 	
-	public int getCellNum () {
-		return index;
-	}
-	
-	public void clearPiece() {
-		this.getChildren().clear();
-		this.isEmpty = true;
-		this.myPlayer = null;
-	}
-	
 	public boolean isEmpty() {
 		return isEmpty;
 	}
 	
+	
+    /*********************************************
+     * 
+     * Private Helper Functions
+     * 
+     *********************************************/
 	private Circle createCircle() {
 		Circle circle = new Circle();
         circle.setRadius(50);

@@ -25,31 +25,15 @@ public class computerPlayer extends player {
 	//return index of first move played, null if no move has been played yet or
 	//more than 1 move has been played
 	private IntPair firstMoveEdge (TicTacToeGame myGame) {
-		int moveCount = 0;
-		int x = 0;
-		int y = 0;
-		IntPair humanMove = null;
 		IntPair result = null;
+		ArrayList<IntPair> filledCells = myGame.getFilledCells();
 		
-		for (int i = 0; i < 3; i++) {
-			for (int j = 0; j < 3; j++) {
-				GameCell cell = myGame.getGameCell(i, j);
-    			if (!cell.getChildren().isEmpty()) {
-    				moveCount += 1;
-    				x = i;
-    				y = j;
-    			}
-			}
-		}
-
-    	if (moveCount == 1) {
-    		humanMove = new IntPair (x, y);
-    		
-        	if (humanMove.equals(0,1) || humanMove.equals(1,0)|| humanMove.equals(2,1) || humanMove.equals(1,2)) {
-        		result = humanMove;
+		if (filledCells.size() == 1) {
+        	if (myGame.isEdgeCell(filledCells.get(0))) {
+        		result = filledCells.get(0);
         	}
     	}
-		    
+
     	return result;
 	}
 	
