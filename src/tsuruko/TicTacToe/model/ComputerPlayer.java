@@ -95,19 +95,20 @@ public class ComputerPlayer extends Player {
 			}
 			
 			//check if I win with the next move
-			cellPicked = getWinningMove (myGame);
+			cellPicked = myGame.getWinningMove (this);
 			if (cellPicked != null) {
 				cellPicked.playPiece(this);
 				return cellPicked;
 			}
 	
 	    	//check if we need to block the opponent's winning move
-			cellPicked = humanPlayer.getWinningMove (myGame);
+			cellPicked = myGame.getWinningMove (humanPlayer);
 			if (cellPicked != null) {
 				return cellPicked;
 			}
 	    	
 	    	//Fork: Create an opportunity where the player has two threats to win (two non-blocked lines of 2).
+			//Need to look ahead 2 moves
 	    	
 	    	//Blocking an opponent's fork: If there is only one possible fork for the opponent, the player should block it. Otherwise, the player should block any forks in any way that simultaneously allows them to create two in a row. Otherwise, the player should create a two in a row to force the opponent into defending, as long as it doesn't result in them creating a fork. For example, if "X" has two opposite corners and "O" has the center, "O" must not play a corner in order to win. (Playing a corner in this scenario creates a fork for "X" to win.)
 	    	
@@ -155,10 +156,10 @@ public class ComputerPlayer extends Player {
 		}
 
 		//Catch All: choose a random empty cell
-    	ArrayList<IntPair> emptyCells = myGame.getEmptyCells();
-    	IntPair coordPicked = pickRandomCoordinates(emptyCells);
-    	if (coordPicked != null) {
-	    	cellPicked = myGame.getGameCell (coordPicked);
+    	ArrayList<GameCell> emptyCells = myGame.getEmptyCells();
+    	if (emptyCells.size() > 0) {
+	    	int coordPicked = rand.nextInt(emptyCells.size());
+		    cellPicked = emptyCells.get(coordPicked);
     	}
     	
     	return cellPicked;
