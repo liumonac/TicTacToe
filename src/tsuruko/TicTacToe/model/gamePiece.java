@@ -12,8 +12,6 @@ public class gamePiece extends StackPane {
 	private int index;
 	
 	gamePiece() {
-		myShape = new xShape(100);
-		this.getChildren().add(myShape);
 		index = 0;
 	}
 	

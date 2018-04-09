@@ -1,6 +1,7 @@
 package tsuruko.TicTacToe.view;
 
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Label;
@@ -22,9 +23,11 @@ public class GameBoardController {
     private Label whosTurn;
     
     public void initalize() {
+
     	currentGame = new TicTacToeGame(gameBoard);
     	newGame();
     }
+
 
     public void newGame() {   
     	currentGame.clearBoard();
@@ -56,6 +59,14 @@ public class GameBoardController {
     	
     	currentGame.processComputerMove();
     	processWinner();
+    }
+    
+    @FXML
+    private void testClick( MouseEvent event) {
+        Node source = (Node)event.getSource() ;
+        Integer colIndex = GridPane.getColumnIndex(source);
+        Integer rowIndex = GridPane.getRowIndex(source);
+        System.out.printf("Mouse entered cell [%d, %d]%n", colIndex.intValue(), rowIndex.intValue());
     }
     
     private void processWinner() {

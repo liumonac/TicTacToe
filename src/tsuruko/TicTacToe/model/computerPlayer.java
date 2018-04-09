@@ -3,8 +3,6 @@ package tsuruko.TicTacToe.model;
 import java.util.ArrayList;
 import java.util.Random;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
@@ -233,7 +231,7 @@ public class computerPlayer extends player {
     	if (cellPicked.getChildren().isEmpty()) {
     		emptyCorners.add(0);
     	}
-    	cellPicked = (StackPane) cellPicked.getChildren().get(2);
+    	cellPicked = (StackPane) gameBoard.getChildren().get(2);
     	if (cellPicked.getChildren().isEmpty()) {
     		emptyCorners.add(2);
     	}

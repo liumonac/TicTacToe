@@ -96,8 +96,13 @@ public class TicTacToeGame {
     }
     
     public void processHumanMove (StackPane cell) {
+        Integer colIndex = GridPane.getColumnIndex(cell);
+        Integer rowIndex = GridPane.getRowIndex(cell);
+        
+        int idx = rowIndex*3 + colIndex;
+        
     	if (isValidMove(cell) && currentPlayer == player1) {
-    		cell.getChildren().add(currentPlayer.playPiece());
+    		cell.getChildren().add(currentPlayer.playPiece(idx));
     	} else {
         	gamePiece piece = (gamePiece) cell.getChildren().get(0);
         	
