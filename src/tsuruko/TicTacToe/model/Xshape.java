@@ -1,15 +1,15 @@
 package tsuruko.TicTacToe.model;
 
-import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 
-public class xShape extends StackPane {
+public class Xshape extends GameShape {
 
     private final Line line = new Line();
     private final Line line2 = new Line();
     private int lengthPos = 0;
 
-	public xShape () {
+	public Xshape () {
 		lengthPos = 50;
 	    line.setStartX(0);
 	    line.setStartY(0);
@@ -25,9 +25,10 @@ public class xShape extends StackPane {
 	    
 	    this.getChildren().add(line);
 	    this.getChildren().add(line2);
+	    this.myShape = line;
 	}
 	
-	public xShape (int lengthPos) {
+	public Xshape (int lengthPos) {
 		this.lengthPos = lengthPos;
 	    line.setStartX(0.0f);
 	    line.setStartY(0.0f);
@@ -43,6 +44,7 @@ public class xShape extends StackPane {
 
 	    this.getChildren().add(line);
 	    this.getChildren().add(line2);
+	    this.myShape = line;
 	}
 	
 	public void setLengthPos (int lengthPos) {
@@ -56,5 +58,10 @@ public class xShape extends StackPane {
 	
 	public int getLengthPos () {
 		return lengthPos;
+	}
+	
+	public void setStrokeColor (Color color) {
+		super.setStrokeColor(color);
+		line2.setStroke(color);
 	}
 }

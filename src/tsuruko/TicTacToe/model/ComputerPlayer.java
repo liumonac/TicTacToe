@@ -3,21 +3,21 @@ package tsuruko.TicTacToe.model;
 import java.util.ArrayList;
 import java.util.Random;
 
-public class computerPlayer extends player {
+public class ComputerPlayer extends Player {
 
 	private final Random rand = new Random();
 	
-	public computerPlayer () {
+	public ComputerPlayer () {
 		this.shapeUsed = CIRCLE;
 		this.playerName = "Computer";
 	}
 	
-	public computerPlayer (String shapeChosen) {
+	public ComputerPlayer (String shapeChosen) {
 		super(shapeChosen);
 		this.playerName = "Computer";
 	}
 
-	public computerPlayer (String shapeChosen, String playerName) {
+	public ComputerPlayer (String shapeChosen, String playerName) {
 		super(shapeChosen, playerName);
 	}
 	
@@ -53,7 +53,7 @@ public class computerPlayer extends player {
 	// 1,0 | 1,1 | 1,2		  3 | 4 | 5
 	// 2,0 | 2,1 | 2,2	      6 | 7 | 8
 	//Using Newell and Simon's 1972 tic-tac-toe program Strategy
-	public GameCell chooseMove (TicTacToeGame myGame, player humanPlayer) {
+	public GameCell chooseMove (TicTacToeGame myGame, Player humanPlayer) {
 		GameCell cellPicked = null;
 		
 		//if opening choose a random move for more fun, to avoid always picking center

@@ -8,13 +8,14 @@ import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.GridPane;
+import javafx.scene.paint.Color;
 
 public class TicTacToeGame {
 	private GridPane gameBoard;
 	
-    private player player1;
-    private player player2;
-    private player currentPlayer;
+    private Player player1;
+    private Player player2;
+    private Player currentPlayer;
     
     private boolean useComputerPlayer;
     
@@ -54,26 +55,26 @@ public class TicTacToeGame {
 	public TicTacToeGame() {
 		gameBoard = new GridPane();
 
-    	player1 = new player();
-    	player2 = new player("o", "Player 2");
+    	player1 = new Player();
+    	player2 = new Player("o", "Player 2");
 	}
 	
 	public TicTacToeGame(GridPane g) {
 		gameBoard = g;
 		
-    	player1 = new player();
-    	player2 = new player("o", "Player 2");
+    	player1 = new Player();
+    	player2 = new Player("o", "Player 2");
 	}
 	
 	public TicTacToeGame(GridPane g, boolean useComputer) {
 		gameBoard = g;
 		useComputerPlayer = useComputer;
 
-    	player1 = new player();
-    	player2 = new player("o", "Player 2");
+    	player1 = new Player();
+    	player2 = new Player("o", "Player 2");
     	
     	if (useComputerPlayer) {
-    		player2 = new computerPlayer();
+    		player2 = new ComputerPlayer();
     	}
 	}
 	
@@ -85,13 +86,13 @@ public class TicTacToeGame {
     public void setComputerPlayer (boolean ai) {
     	useComputerPlayer = ai;
     	if (useComputerPlayer) {
-    		player2 = new computerPlayer();
+    		player2 = new ComputerPlayer();
     	} else {
-    		player2 = new player("o", "Player 2");
+    		player2 = new Player("o", "Player 2");
     	}
     }
 	
-	public player getCurrentPlayer() {
+	public Player getCurrentPlayer() {
 		return currentPlayer;
 	}
 	
@@ -123,7 +124,7 @@ public class TicTacToeGame {
 		setWhoFirst();
 
         if (useComputerPlayer && currentPlayer!= player1) {
-        	GameCell cell = ((computerPlayer) player2).chooseMove(this, player1);
+        	GameCell cell = ((ComputerPlayer) player2).chooseMove(this, player1);
         	cell.playPiece(currentPlayer);
         	currentPlayer = player1;
         }
@@ -162,7 +163,7 @@ public class TicTacToeGame {
     
     public boolean processComputerMove () {
     	if (useComputerPlayer && currentPlayer != player1) {
-    		GameCell cell = ((computerPlayer) currentPlayer).chooseMove(this, player1);
+    		GameCell cell = ((ComputerPlayer) currentPlayer).chooseMove(this, player1);
     		cell.playPiece(currentPlayer);
     		return true;
     	}
@@ -370,6 +371,10 @@ public class TicTacToeGame {
     public boolean hasWinner() {
     	if (checkWinner()) {
     		currentPlayer = winCells.get(0).getPlayer();
+    		
+    		for (GameCell cell : winCells) {
+    			cell.setColor (Color.RED);
+    		}
     		return true;
     	}
     	return false;
@@ -469,7 +474,7 @@ public class TicTacToeGame {
         return false;	
     }
     
-    public boolean playerHasWon (player p) {
+    public boolean playerHasWon (Player p) {
     	winCells.clear();
     	//check rows
     	for (int i = 0; i < 3; i++) {

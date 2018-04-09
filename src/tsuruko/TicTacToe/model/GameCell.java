@@ -1,13 +1,11 @@
 package tsuruko.TicTacToe.model;
 
-import javafx.scene.Node;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
 
 public class GameCell extends StackPane {
-	private Node myShape;
-	private player myPlayer;
+	private GameShape myShape;
+	private Player myPlayer;
 	private boolean isEmpty = true;
 	
 	private int index;
@@ -25,9 +23,9 @@ public class GameCell extends StackPane {
 	
 	public GameCell(String shapeChosen, int idx) {
 		if (shapeChosen.equals("O") || shapeChosen.equals("o")) {
-	        myShape = createCircle();
+	        myShape = new Oshape();
 		} else {
-			myShape = new xShape(100);
+			myShape = new Xshape(100);
 		}
 		this.getChildren().add(myShape);
 		this.index = idx;
@@ -38,13 +36,12 @@ public class GameCell extends StackPane {
      * Setters
      * 
      *********************************************/
-	public void setPlayer (player p) {
+	public void setPlayer (Player p) {
 		myPlayer = p;
 	}
 	
-	public void setColor (String color) {
-		//if myShape.getClass()
-		//myShape.setStroke(color);
+	public void setColor (Color color) {
+		myShape.setStrokeColor(color);
 	}
 	
     /*********************************************
@@ -52,7 +49,7 @@ public class GameCell extends StackPane {
      * Getters
      * 
      *********************************************/
-	public player getPlayer () {
+	public Player getPlayer () {
 		return myPlayer;
 	}
 	
@@ -65,13 +62,13 @@ public class GameCell extends StackPane {
      * Main Functions
      * 
      *********************************************/
-	public void playPiece (player p) {
+	public void playPiece (Player p) {
 		if (isEmpty) {
 			myPlayer = p;
-			if (myPlayer.getShapeUsed() == player.CIRCLE) {
-		        myShape = createCircle();
+			if (myPlayer.getShapeUsed() == Player.CIRCLE) {
+		        myShape = new Oshape();
 			} else {
-				myShape = new xShape(100);
+				myShape = new Xshape(100);
 			}
 			isEmpty = false;
 			this.getChildren().add(myShape);
@@ -89,7 +86,7 @@ public class GameCell extends StackPane {
      * Check State
      * 
      *********************************************/
-	public boolean isPlayedBy (player p) {
+	public boolean isPlayedBy (Player p) {
 		if (myPlayer == null) {
 			return false;
 		}
@@ -98,21 +95,5 @@ public class GameCell extends StackPane {
 	
 	public boolean isEmpty() {
 		return isEmpty;
-	}
-	
-	
-    /*********************************************
-     * 
-     * Private Helper Functions
-     * 
-     *********************************************/
-	private Circle createCircle() {
-		Circle circle = new Circle();
-        circle.setRadius(50);
-        circle.setFill(Color.WHITESMOKE);
-        circle.setStroke(Color.BLACK);
-        circle.setStrokeWidth(5);
-        
-        return circle;
 	}
 }
