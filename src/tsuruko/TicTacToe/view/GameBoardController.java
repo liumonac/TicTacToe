@@ -9,6 +9,7 @@ import javafx.scene.layout.GridPane;
 import tsuruko.TicTacToe.model.TicTacToeGame;
 import tsuruko.TicTacToe.MainApp;
 import tsuruko.TicTacToe.model.GameCell;
+import tsuruko.TicTacToe.model.IntPair;
 
 public class GameBoardController {
     
@@ -38,7 +39,7 @@ public class GameBoardController {
 
     
     private void addCell (int rowIndex, int colIndex) {
-        GameCell cell = new GameCell();
+        GameCell cell = new GameCell(new IntPair (rowIndex, colIndex));
         
         cell.setOnMouseClicked(event -> {
         	Node source = (Node) event.getSource();

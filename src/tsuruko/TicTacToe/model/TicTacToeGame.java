@@ -3,7 +3,6 @@ package tsuruko.TicTacToe.model;
 import java.util.ArrayList;
 import java.util.Random;
 
-import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -19,11 +18,11 @@ public class TicTacToeGame {
     
     private boolean useComputerPlayer;
     
-    private ArrayList<GameCell> winCells = new ArrayList<GameCell>();
-    
+    //avoids having to cast node using getChildren()
+    private ArrayList<GameCell> allCells = new ArrayList<GameCell>();
     private ArrayList<GameCell> emptyCells = new ArrayList<GameCell>();
-    
-    
+    private ArrayList<GameCell> winCells = new ArrayList<GameCell>();
+
 
     /*********************************************
      * 
@@ -35,16 +34,6 @@ public class TicTacToeGame {
 	 *	 2,0 | 2,1 | 2,2	6 | 7 | 8
      * 
      *********************************************/
-    private static final IntPair[] corners = new IntPair[] { new IntPair(0, 0), 
-			    								 			 new IntPair(0, 2),
-			    											 new IntPair(2, 0),
-			    											 new IntPair(2, 2)};
-    
-    private static final IntPair[] edges = new IntPair[] { new IntPair(0, 1), 
-													  	   new IntPair(1, 0),
-														   new IntPair(1, 2),
-														   new IntPair(2, 1)};
-    
     private static final IntPair[] rightDiagonal = new IntPair[] { new IntPair(0, 2), 
 															  	   new IntPair(1, 1),
 																   new IntPair(2, 0)};
@@ -142,16 +131,12 @@ public class TicTacToeGame {
 	}
 	
 	public void clearBoard() {
-		for (int i = 0; i < 3; i++) {
-			for (int j = 0; j < 3; j++) {
-				GameCell cellPicked = getGameCell(i, j);
-    			if (!cellPicked.isEmpty()) {
-    				cellPicked.clearPiece();
-    			}
-			}
+		emptyCells.clear();
+		winCells.clear();
+		for (GameCell cell : allCells) {
+			emptyCells.add(cell);
+			cell.clearPiece();
 		}
-		
-		initiate();
 	}
     
     /*********************************************
@@ -178,8 +163,12 @@ public class TicTacToeGame {
     public boolean processComputerMove () {
     	if (useComputerPlayer && currentPlayer != player1) {
     		GameCell cell = ((ComputerPlayer) currentPlayer).chooseMove(this, player1);
-    		cell.playPiece(currentPlayer);
-    		emptyCells.remove(cell);
+    		if (cell != null) {
+	    		cell.playPiece(currentPlayer);
+	    		emptyCells.remove(cell);
+    		} else {
+    			System.out.println("Error: No computer move selected");
+    		}
     		return true;
     	}
     	return false;
@@ -191,63 +180,50 @@ public class TicTacToeGame {
      * 
      *********************************************/
     public GameCell getGameCell (IntPair coordinates) {
-    	return getGameCell(coordinates.getX(), coordinates.getY());
-    }
-
-    public GameCell getGameCell (int row, int column) {
     	GameCell result = null;
-    	
-        ObservableList<Node> childrens = gameBoard.getChildren();
 
-        for (Node node : childrens) {
-            if (	   node.getClass() == GameCell.class
-            		&& GridPane.getRowIndex(node) == row 
-            		&& GridPane.getColumnIndex(node) == column) {
-                result = (GameCell) node;
-                break;
-            }
+        for (GameCell cell : allCells) {
+        	if (cell.getIdx().equals (coordinates)) {
+        		result = cell;
+        	}
+            break;
         }
 
         return result;
     }
+
+    public GameCell getGameCell (int row, int column) {
+        return getGameCell(new IntPair (row, column));
+    }
     
-    public IntPair getOppositeCell (IntPair coordinates) {
-    	IntPair result = null;
+    private int getOppositeIdx (int idx) {
+    	int result = -1;
     	
-    	//edges
-    	if (coordinates.equals(0, 1)) {
-    		result = new IntPair (2, 1);
+    	switch (idx) {
+    		case 0:
+    			result = 2;
+    			break;
+    		case 1:
+    			result = 1;
+    			break;
+    		case 2:
+    			result = 0;
+    			break;
     	}
     	
-    	if (coordinates.equals(2, 1)) {
-    		result = new IntPair (0, 1);
-    	}
+    	return result;
+    }
+    
+    public GameCell getOppositeCell (GameCell cell) {
+    	GameCell result = null;
+    	IntPair coordinates = cell.getIdx();
+    	int x = getOppositeIdx (coordinates.getX());
+    	int y = getOppositeIdx (coordinates.getY());
     	
-    	if (coordinates.equals(1, 0)) {
-    		result = new IntPair (1, 2);
-    	}
-    	
-    	if (coordinates.equals(1, 2)) {
-    		result = new IntPair (1, 0);
+    	if (x != -1 && y != -1 ) {
+    		result = getGameCell (x, y);
     	}
 
-    	//corners
-    	if (coordinates.equals(0, 0)) {
-    		result = new IntPair (2, 2);
-    	}
-    	
-    	if (coordinates.equals(2, 0)) {
-    		result = new IntPair (0, 2);
-    	}
-    	
-    	if (coordinates.equals(0, 2)) {
-    		result = new IntPair (2, 0);
-    	}
-    	
-    	if (coordinates.equals(2, 2)) {
-    		result = new IntPair (0, 0);
-    	}
-    	
     	return result;
     }
     
@@ -256,19 +232,17 @@ public class TicTacToeGame {
 	 * Game Cell Getters (filled)
 	 * 
 	 *********************************************/
-    public ArrayList<IntPair> getFilledCells () {
-    	ArrayList<IntPair> fiiledCells = new ArrayList<>();
+    public ArrayList<GameCell> getFilledCells () {
+    	ArrayList<GameCell> filledCells = new ArrayList<>();
     	
-		for (int i = 0; i < 3; i++) {
-			for (int j = 0; j < 3; j++) {
-				GameCell cell = getGameCell(i, j);
-    			if (!cell.isEmpty()) {
-    				fiiledCells.add(new IntPair (i, j));
-    			}
-			}
-		}
+        for (GameCell cell : allCells) {
+        	if (! cell.isEmpty()) {
+        		filledCells.add(cell);
+        	}
+            break;
+        }
 		
-		return fiiledCells;
+		return filledCells;
     }
     
 	/*********************************************
@@ -280,42 +254,26 @@ public class TicTacToeGame {
 		return emptyCells;
     }
     
-    public ArrayList<IntPair> getEmptyCells (ArrayList<IntPair> cellList) {
-    	ArrayList<IntPair> filterList = new ArrayList<>();
+    public ArrayList<GameCell> getEmptyCells (int cellType) {
+    	ArrayList<GameCell> filteredCells = new ArrayList<>();
     	
-    	for (IntPair coordinates : cellList) {
-    		GameCell cell = getGameCell (0,0);
-    		if (cell.isEmpty()) {
-    			filterList.add(coordinates);
-    		}
+    	if (cellType == GameCell.CORNER 
+    			|| cellType == GameCell.EDGE 
+    			|| cellType == GameCell.CENTER
+    		) {
+    		
+            for (GameCell cell : emptyCells) {
+            	if (cell.getCellType() == cellType) {
+            		filteredCells.add(cell);
+            	}
+                break;
+            }
+            
+    	} else {
+    		System.out.println("Error: Invalid Game Cell Type");
     	}
-    	return filterList;
-    }
-    
-    public ArrayList<IntPair> getEmptyCorners () {
-    	ArrayList<IntPair> emptyCorners = new ArrayList<>();
-    	
-		for (int i = 0; i < corners.length; i++) {
-			GameCell cell = getGameCell(corners[i]);
-			if (cell.isEmpty()) {
-				emptyCorners.add(corners[i]);
-			}
-		}
-		
-		return emptyCorners;
-    }
-    
-    public ArrayList<IntPair> getEmptyEdges () {
-    	ArrayList<IntPair> emptyEdges = new ArrayList<>();
-    	
-		for (int i = 0; i < edges.length; i++) {
-			GameCell cell = getGameCell(edges[i]);
-			if (cell.isEmpty()) {
-				emptyEdges.add(edges[i]);
-			}
-		}
-		
-		return emptyEdges;
+
+		return filteredCells;
     }
     
 	//helper for finding a winning move
@@ -344,24 +302,7 @@ public class TicTacToeGame {
      * Check Game Cell state
      * 
      *********************************************/
-    public boolean isEdgeCell (IntPair coordinates) {
-		for (int i = 0; i < edges.length; i++) {
-			if (edges[i].equals(coordinates)) {
-				return true;
-			}
-		}
-		return false;
-    }
-    
-    public boolean isCornerCell (IntPair coordinates) {
-		for (int i = 0; i < corners.length; i++) {
-			if (corners[i].equals(coordinates)) {
-				return true;
-			}
-		}
-		return false;
-    }
-    
+
     public ArrayList<IntPair> matchingNeighbors (IntPair checkIdx) {
     	ArrayList<IntPair> neighbors = new ArrayList<IntPair>();
     	GameCell checkCell = getGameCell (checkIdx);
@@ -394,15 +335,10 @@ public class TicTacToeGame {
     }
     
     public boolean isDraw () {
-    	for (Node n : gameBoard.getChildren()) {
-    		if (n.getClass() == GameCell.class) {
-    			GameCell cell = (GameCell) n;
-    			if (cell.isEmpty()) {
-    				return false;
-    			}
-    		}
+    	if (emptyCells.isEmpty()) {
+    		return true;
     	}
-    	return true;
+    	return false;
     }
     
     public boolean hasWinner() {
@@ -418,99 +354,17 @@ public class TicTacToeGame {
     }
 
     private boolean checkWinner () {
-    	winCells.clear();
-    	
-    	for (int i = 0; i < 3; i++) {
-    		winCells.clear();
-    		for (int j = 0; j < 3; j++) {
-    			GameCell cell = getGameCell(i, j);
-    			
-    			if (cell.isEmpty()) {
-    				break;
-    			}
-				if (winCells.isEmpty() ||
-					cell.isPlayedBy(winCells.get(0).getPlayer())
-				) {
-					winCells.add(cell);
-				} else {
-					break;
-				}
-    		}
-    		if (winCells.size() == 3) {
-    			return true;
-    		}
-    	}
-
-    	//check columns
-    	for (int j = 0; j < 3; j++) {
-    		winCells.clear();
-    		for (int i = 0; i < 3; i++) {
-    			GameCell cell = getGameCell(i, j);
-    			
-    			if (cell.isEmpty()) {
-    				break;
-    			}
-				if (winCells.isEmpty() ||
-					cell.isPlayedBy(winCells.get(0).getPlayer())
-				) {
-					winCells.add(cell);
-				} else {
-					break;
-				}
-    		}
-    		if (winCells.size() == 3) {
-    			return true;
-    		}
-    	}
-
-    	//check left-right diagonal
-    	//(0,0), (1,1), (2,2)
-    	winCells.clear();
-    	for (int i = 0; i < 3; i++) {
-			GameCell cell = getGameCell(i, i);
-			
-			if (cell.isEmpty()) {
-				break;
-			}
-			if (winCells.isEmpty() ||
-				cell.isPlayedBy(winCells.get(0).getPlayer())
-			) {
-				winCells.add(cell);
-			} else {
-				break;
-			}
-			if (winCells.size() == 3) {
-				return true;
-			}
+    	if (playerHasWon (player1)) {
+    		return true;
     	}
     	
-    	//check right-left diagonal
-    	winCells.clear();
-    	for (int i = 0; i < rightDiagonal.length; i++) {
-    		GameCell cell = getGameCell(rightDiagonal[i]);
-			
-			if (cell.isEmpty()) {
-				break;
-			}
-			if (winCells.isEmpty() ||
-				cell.isPlayedBy(winCells.get(0).getPlayer())
-			) {
-				winCells.add(cell);
-			} else {
-				break;
-			}
-			if (winCells.size() == 3) {
-				return true;
-			}
+    	if (playerHasWon (player2)) {
+    		return true;
     	}
-    	
-		if (winCells.size() == 3) {
-			return true;
-		}
 
-        return false;	
+    	return false;
     }
-    
+
     public boolean playerHasWon (Player p) {
     	//only 2 moves have been played, we don't need to bother checking
     	if (emptyCells.size() > 6) {
@@ -523,7 +377,7 @@ public class TicTacToeGame {
     		for (int j = 0; j < 3; j++) {
     			GameCell cell = getGameCell(i, j);
     			
-    			if (!cell.isEmpty() && cell.isPlayedBy(p)) {
+    			if (cell.isPlayedBy(p)) {
     				winCells.add(cell);
     			} else {
     				break;
@@ -540,7 +394,7 @@ public class TicTacToeGame {
     		for (int i = 0; i < 3; i++) {
     			GameCell cell = getGameCell(i, j);
     			
-    			if (!cell.isEmpty() && cell.isPlayedBy(p)) {
+    			if (cell.isPlayedBy(p)) {
     				winCells.add(cell);
     			} else {
     				break;
@@ -557,7 +411,7 @@ public class TicTacToeGame {
     	for (int i = 0; i < 3; i++) {
     		GameCell cell = getGameCell(i, i);
     		
-    		if (!cell.isEmpty() && cell.isPlayedBy(p)) {
+    		if (cell.isPlayedBy(p)) {
     			winCells.add(cell);
     		} else {
     			break;
@@ -572,7 +426,7 @@ public class TicTacToeGame {
     	winCells.clear();
     	for (int i = 0; i < rightDiagonal.length; i++) {
     		GameCell cell = getGameCell(rightDiagonal[i]);
-    		if (!cell.isEmpty() && cell.isPlayedBy(p)) {
+    		if (cell.isPlayedBy(p)) {
     			winCells.add(cell);
     		} else {
     			break;
@@ -606,14 +460,15 @@ public class TicTacToeGame {
     private void initiate() {
     	emptyCells = new ArrayList<>();
     	
-		for (int i = 0; i < 3; i++) {
-			for (int j = 0; j < 3; j++) {
-				GameCell cell = getGameCell(i, j);
+    	for (Node node : gameBoard.getChildren()) {
+    		if (node.getClass() == GameCell.class) {
+    			GameCell cell = (GameCell) node;
+    			allCells.add(cell);
     			if (cell.isEmpty()) {
     				emptyCells.add(cell);
     			}
-			}
-		}
+    		}
+    	}
     }
     
 }

@@ -26,11 +26,11 @@ public class ComputerPlayer extends Player {
 	//more than 1 move has been played
 	private IntPair firstMoveEdge (TicTacToeGame myGame) {
 		IntPair result = null;
-		ArrayList<IntPair> filledCells = myGame.getFilledCells();
+		ArrayList<GameCell> filledCells = myGame.getFilledCells();
 		
 		if (filledCells.size() == 1) {
-        	if (myGame.isEdgeCell(filledCells.get(0))) {
-        		result = filledCells.get(0);
+        	if (filledCells.get(0).getCellType() == GameCell.EDGE) {
+        		result = filledCells.get(0).getIdx();
         	}
     	}
 
@@ -38,14 +38,14 @@ public class ComputerPlayer extends Player {
 	}
 	
 	//Helper function for randomizing moves
-	private IntPair pickRandomCoordinates(ArrayList<IntPair> list) {
-		IntPair pickCoord = null;
+	private GameCell pickRandomCell(ArrayList<GameCell> list) {
+		GameCell result = null;
     	if (list.size() > 0) {
     		int pickIdx = rand.nextInt(list.size());
-    		pickCoord =list.get(pickIdx);
+    		result =list.get(pickIdx);
     	}
     	
-    	return pickCoord;
+    	return result;
 	}
 	
 	//Grid Indexes
@@ -88,7 +88,7 @@ public class ComputerPlayer extends Player {
 		            	}
 		            	break;
 		            case 2:
-		            	cellPicked = myGame.getGameCell (myGame.getOppositeCell(moveIdx));
+		            	cellPicked = myGame.getOppositeCell(myGame.getGameCell(moveIdx));
 		            	break;
 		        }
 			    return cellPicked;
@@ -120,47 +120,39 @@ public class ComputerPlayer extends Player {
 	    	
 	    	//Opposite corner: If the opponent is in the corner, the player plays the opposite corner.
 	    	//Add functionality to pick a random corner if multiple are already played by opponent
-	    	ArrayList<IntPair> emptyCorners = myGame.getEmptyCorners();
-	    	ArrayList<IntPair> possibleMoves = new ArrayList<>();
+	    	ArrayList<GameCell> emptyCorners = myGame.getEmptyCells(GameCell.CORNER);
+	    	ArrayList<GameCell> possibleMoves = new ArrayList<>();
 	    	
-	    	for (IntPair pair : emptyCorners) {
-	    		GameCell oppositeCell = myGame.getGameCell(myGame.getOppositeCell(pair));
+	    	for (GameCell cell : emptyCorners) {
+	    		GameCell oppositeCell = myGame.getOppositeCell(cell);
 	    		if (oppositeCell.isPlayedBy(humanPlayer)) {
-	    			possibleMoves.add(pair);
+	    			possibleMoves.add(cell);
 	    		}
 	    	}
 
-	    	IntPair coordPicked = pickRandomCoordinates(possibleMoves);
-	    	if (coordPicked != null) {
-	    		cellPicked = myGame.getGameCell (coordPicked);
+	    	cellPicked = pickRandomCell(possibleMoves);
+	    	if (cellPicked != null) {
 	    		return cellPicked;
 	    	}
 
 	    	//Empty corner: The player plays in a corner square.
 	    	//Add functionality to pick a random corner if multiple are empty  	
-	    	coordPicked = pickRandomCoordinates(emptyCorners);
-	    	if (coordPicked != null) {
-	    		cellPicked = myGame.getGameCell (coordPicked);
+	    	cellPicked = pickRandomCell(emptyCorners);
+	    	if (cellPicked != null) {
 	    		return cellPicked;
 	    	}
 	    	
 	    	//Empty side: The player plays in a middle square on any of the 4 sides.
 	    	//Add functionality to pick a random edge if multiple are empty
-	    	ArrayList<IntPair> emptyEdges = myGame.getEmptyEdges();
-	    	
-	    	coordPicked = pickRandomCoordinates(emptyEdges);
-	    	if (coordPicked != null) {
-	    		cellPicked = myGame.getGameCell (coordPicked);
+	    	cellPicked = pickRandomCell(myGame.getEmptyCells(GameCell.EDGE));
+	    	if (cellPicked != null) {
 	    		return cellPicked;
 	    	}
+
 		}
 
 		//Catch All: choose a random empty cell
-    	ArrayList<GameCell> emptyCells = myGame.getEmptyCells();
-    	if (emptyCells.size() > 0) {
-	    	int coordPicked = rand.nextInt(emptyCells.size());
-		    cellPicked = emptyCells.get(coordPicked);
-    	}
+		cellPicked = pickRandomCell(myGame.getEmptyCells());
     	
     	return cellPicked;
 	}
