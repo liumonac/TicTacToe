@@ -49,9 +49,9 @@ public class GameBoardController {
     	}
     	
     	Random rand = new Random();
-    	int whoFirst = rand.nextInt(100) + 1;
+    	int whoFirst = rand.nextInt(2);
     	
-    	if (whoFirst <= 50) {
+    	if (whoFirst == 0) {
     		currentPlayer = player2;
     	} else {
     		currentPlayer = player1;
