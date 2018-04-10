@@ -9,12 +9,15 @@ public class GameCell extends StackPane {
 	public static final int CORNER = 2;
 	
 	private GameShape myShape;
-
 	private Player myPlayer;
 	
 	private boolean isEmpty = true;
 	private IntPair index;
 	private int cellType = -1;
+	
+	//applies to edge types
+	private IntPair cornerNeighbor1;
+	private IntPair cornerNeighbor2;
 	
     /*********************************************
      * 
@@ -27,6 +30,7 @@ public class GameCell extends StackPane {
 		this.getChildren().clear();
 		isEmpty = true;
 		setType();
+		setNeighbors();
 	}
 
 	public GameCell(IntPair idx) {
@@ -34,6 +38,7 @@ public class GameCell extends StackPane {
 		this.getChildren().clear();
 		isEmpty = true;
 		setType();
+		setNeighbors();
 	}
 	
 	public GameCell(IntPair idx, Player player) {
@@ -41,6 +46,7 @@ public class GameCell extends StackPane {
 		this.getChildren().clear();
 		playPiece (player);
 		setType();
+		setNeighbors();
 	}
 	
     /*********************************************
@@ -58,15 +64,30 @@ public class GameCell extends StackPane {
 	
 	private void setType() {
 		if (index.equals(0,0) || index.equals(0,2) || index.equals(2,0) || index.equals(2,2)) {
-			this.cellType = CORNER;
+			cellType = CORNER;
 		}
 		
 		if (index.equals(0,1) || index.equals(1,0) || index.equals(1,2) || index.equals(2,1)) {
-			this.cellType = EDGE;
+			cellType = EDGE;
 		}
 		
 		if (index.equals(1,1)) {
-			this.cellType = CENTER;
+			cellType = CENTER;
+		}
+	}
+	
+	private void setNeighbors() {
+		if (cellType == EDGE) {
+			if (index.getX() == 1) {
+				cornerNeighbor1 = new IntPair (0, index.getY());
+				cornerNeighbor2 = new IntPair (2, index.getY());
+			} else {
+				cornerNeighbor1 = new IntPair (index.getX(), 0);
+				cornerNeighbor2 = new IntPair (index.getX(), 2);
+			}
+		} else {
+			cornerNeighbor1 = new IntPair (-1, -1);
+			cornerNeighbor2 = new IntPair (-1, -1);
 		}
 	}
 	
@@ -85,6 +106,14 @@ public class GameCell extends StackPane {
 	
 	public int getCellType () {
 		return cellType;
+	}
+	
+	public IntPair getCorner1 () {
+		return cornerNeighbor1;
+	}
+	
+	public IntPair getCorner2 () {
+		return cornerNeighbor2;
 	}
 	
     /*********************************************

@@ -180,16 +180,13 @@ public class TicTacToeGame {
      * 
      *********************************************/
     public GameCell getGameCell (IntPair coordinates) {
-    	GameCell result = null;
-
         for (GameCell cell : allCells) {
         	if (cell.getIdx().equals (coordinates)) {
-        		result = cell;
+        		return cell;
         	}
-            break;
         }
 
-        return result;
+        return null;
     }
 
     public GameCell getGameCell (int row, int column) {
@@ -266,7 +263,6 @@ public class TicTacToeGame {
             	if (cell.getCellType() == cellType) {
             		filteredCells.add(cell);
             	}
-                break;
             }
             
     	} else {
@@ -276,25 +272,33 @@ public class TicTacToeGame {
 		return filteredCells;
     }
     
+    public GameCell getEmptyCenter() {
+        for (GameCell cell : emptyCells) {
+        	if (cell.getCellType() == GameCell.CENTER) {
+        		if (! cell.isEmpty()) {
+        			return cell;
+        		}
+        	}
+        }
+        return null;
+    }
+    
 	//helper for finding a winning move
 	//returns null if no winning move exists
 	public GameCell getWinningMove(Player p) {
-		GameCell result = null;
 		for (GameCell cellIterator : emptyCells) {
 			if (cellIterator.isEmpty()) {
 				cellIterator.playPiece(p);
 	        	if (playerHasWon(p)) {
 	        		cellIterator.clearPiece();
-	        		result = cellIterator;
-	        		break;
+	        		return cellIterator;
 	        	} else {
 	        		cellIterator.clearPiece();
 	        	}
 			}
 		}
 		
-		return result;
-
+		return null;
 	}
     
     /*********************************************
@@ -458,6 +462,7 @@ public class TicTacToeGame {
     }
     
     private void initiate() {
+    	allCells = new ArrayList<>();
     	emptyCells = new ArrayList<>();
     	
     	for (Node node : gameBoard.getChildren()) {
