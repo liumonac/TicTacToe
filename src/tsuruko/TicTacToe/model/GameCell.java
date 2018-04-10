@@ -19,6 +19,10 @@ public class GameCell extends StackPane {
 	private IntPair cornerNeighbor1;
 	private IntPair cornerNeighbor2;
 	
+	//cell size control
+	private double cellWidth = 0;
+	private double cellHeight = 0;
+	
     /*********************************************
      * 
      * Constructors
@@ -26,6 +30,7 @@ public class GameCell extends StackPane {
      *********************************************/
 
 	public GameCell() {
+		this.setMinSize(0, 0);
 		index = new IntPair (-1, -1);
 		this.getChildren().clear();
 		isEmpty = true;
@@ -34,6 +39,7 @@ public class GameCell extends StackPane {
 	}
 
 	public GameCell(IntPair idx) {
+		this.setMinSize(0, 0);
 		this.index = idx;
 		this.getChildren().clear();
 		isEmpty = true;
@@ -42,9 +48,10 @@ public class GameCell extends StackPane {
 	}
 	
 	public GameCell(IntPair idx, Player player, double width, double height) {
+		this.setMinSize(0, 0);
 		this.index = idx;
 		this.getChildren().clear();
-		playPiece (player, width, height);
+		playPiece (player);
 		setType();
 		setNeighbors();
 	}
@@ -55,8 +62,11 @@ public class GameCell extends StackPane {
      * 
      *********************************************/
 	public void setSize (double width, double height) {
+		cellWidth = width;
+		cellHeight = height;
+		
 		if (myShape != null) {
-			myShape.setSize (width, height);
+			myShape.setSize(width, height);
 		}
 	}
 	
@@ -126,21 +136,6 @@ public class GameCell extends StackPane {
     }
     
 	
-	private void setNeighbors() {
-		if (cellType == EDGE) {
-			if (index.getX() == 1) {
-				cornerNeighbor1 = new IntPair (0, index.getY());
-				cornerNeighbor2 = new IntPair (2, index.getY());
-			} else {
-				cornerNeighbor1 = new IntPair (index.getX(), 0);
-				cornerNeighbor2 = new IntPair (index.getX(), 2);
-			}
-		} else {
-			cornerNeighbor1 = new IntPair (-1, -1);
-			cornerNeighbor2 = new IntPair (-1, -1);
-		}
-	}
-	
     /*********************************************
      * 
      * Getters
@@ -166,18 +161,25 @@ public class GameCell extends StackPane {
 		return cornerNeighbor2;
 	}
 	
+	public boolean isAnimation () {
+		if (myShape != null) {
+			return myShape.isAnimation();
+		}
+		return false;
+	}
+	
     /*********************************************
      * 
      * Main Functions
      * 
      *********************************************/
-	public void playPiece (Player p, double width, double height) {
+	public void playPiece (Player p) {
 		if (isEmpty) {
 			myPlayer = p;
 			if (myPlayer.getShapeUsed() == Player.CIRCLE) {
-		        myShape = new Oshape(width, height);
+		        myShape = new Oshape(cellWidth, cellHeight);
 			} else {
-				myShape = new Xshape(width, height);
+				myShape = new Xshape(cellWidth, cellHeight);
 			}
 			isEmpty = false;
 			this.getChildren().add(myShape);
@@ -204,5 +206,25 @@ public class GameCell extends StackPane {
 	
 	public boolean isEmpty() {
 		return isEmpty;
+	}
+	
+    /*********************************************
+     * 
+     * Private Helper Functions
+     * 
+     *********************************************/
+	private void setNeighbors() {
+		if (cellType == EDGE) {
+			if (index.getX() == 1) {
+				cornerNeighbor1 = new IntPair (0, index.getY());
+				cornerNeighbor2 = new IntPair (2, index.getY());
+			} else {
+				cornerNeighbor1 = new IntPair (index.getX(), 0);
+				cornerNeighbor2 = new IntPair (index.getX(), 2);
+			}
+		} else {
+			cornerNeighbor1 = new IntPair (-1, -1);
+			cornerNeighbor2 = new IntPair (-1, -1);
+		}
 	}
 }

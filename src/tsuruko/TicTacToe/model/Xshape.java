@@ -1,7 +1,6 @@
 package tsuruko.TicTacToe.model;
 
 import javafx.animation.*;
-import javafx.geometry.Pos;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.util.Duration;
@@ -18,8 +17,7 @@ public class Xshape extends GameShape {
      * 
      *********************************************/
 	public Xshape (double width, double height) {
-		this.setMinSize(0, 0);
-		this.setAlignment(Pos.CENTER);
+		super();
 		
 		length = Math.min(width, height) - PADDING - PADDING;  //pad both sides
 
@@ -56,7 +54,7 @@ public class Xshape extends GameShape {
 	
 	public void setSize (double width, double height) {
 		length = Math.min(width, height) - PADDING - PADDING;  //pad both sides
-		System.out.println(length);
+
 	    line.setEndX(length);
 	    line.setEndY(length);
 	    
@@ -70,6 +68,7 @@ public class Xshape extends GameShape {
      * 
      *********************************************/
 	private void animate() {
+		playingAnimation = true;
 		final KeyValue xValue1 = new KeyValue(line.endXProperty(), length);
 		final KeyValue yValue1 = new KeyValue(line.endYProperty(), length);
 		final KeyFrame xKeyFrame1 = new KeyFrame(Duration.millis(500), xValue1);
@@ -84,6 +83,11 @@ public class Xshape extends GameShape {
 		timeline.getKeyFrames().add(xKeyFrame2);
 		timeline.getKeyFrames().add(yKeyFrame1);
 		timeline.getKeyFrames().add(yKeyFrame2);
+		
+		timeline.setOnFinished(event -> {
+			playingAnimation = false;
+		});
+		
 		timeline.play();
 	}
 }

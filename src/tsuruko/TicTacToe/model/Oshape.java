@@ -12,7 +12,8 @@ public class Oshape extends GameShape {
     private double radius = 0;
     
 	public Oshape (double width, double height) {
-		this.setMinSize(0, 0);
+		super();
+
 		radius = (Math.min(width, height)/2) - PADDING;
         circle.setRadius(0);
         circle.setFill(Color.color(0,0,0,0));  //transparent
@@ -41,10 +42,16 @@ public class Oshape extends GameShape {
      * 
      *********************************************/
 	private void animate() {
+		playingAnimation = true;
 		final KeyValue val = new KeyValue(circle.radiusProperty(), radius);
 		final KeyFrame keyFrame = new KeyFrame(Duration.millis(500), val);
 
 		timeline.getKeyFrames().add(keyFrame);
+		
+		timeline.setOnFinished(event -> {
+			playingAnimation = false;
+		});
+		
 		timeline.play();
 	}
 }

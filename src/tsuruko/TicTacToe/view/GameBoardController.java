@@ -47,6 +47,10 @@ public class GameBoardController {
         GameCell cell = new GameCell(new IntPair (rowIndex, colIndex));
         
         cell.setOnMouseClicked(event -> {
+        	if (currentGame.isAnimatingPiece()) {
+        		return;  //make players wait for their turn
+        	}
+        	
         	Node source = (Node) event.getSource();
         	if (source.getClass() == GameCell.class) { 
 	            GameCell clickedCell = (GameCell) event.getSource();

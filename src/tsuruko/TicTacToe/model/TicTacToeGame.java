@@ -80,7 +80,7 @@ public class TicTacToeGame {
 	
     /*********************************************
      * 
-     * General Game Board Functionality
+     * General Game Board Setters
      * 
      *********************************************/
     public void setComputerPlayer (boolean ai) {
@@ -92,10 +92,20 @@ public class TicTacToeGame {
     	}
     }
 	
+    /*********************************************
+     * 
+     * General Game Board Getters
+     * 
+     *********************************************/
 	public Player getCurrentPlayer() {
 		return currentPlayer;
 	}
 	
+    /*********************************************
+     * 
+     * General Game Board Getters
+     * 
+     *********************************************/
     public void toggleCurrentPlayer() {
     	if (currentPlayer == player1) {
     		currentPlayer = player2;
@@ -103,10 +113,6 @@ public class TicTacToeGame {
     		currentPlayer = player1;
     	}
     }
-    
-	public GridPane getGameBoard() {
-		return gameBoard;
-	}
 	
 	public String getWinMesage() {
     	if (useComputerPlayer) {
@@ -120,12 +126,17 @@ public class TicTacToeGame {
     	}
 	}
 	
+    /*********************************************
+     * 
+     * General Game Board Functionality
+     * 
+     *********************************************/
 	public void newGame() {
 		setWhoFirst();
 
         if (useComputerPlayer && currentPlayer!= player1) {
         	GameCell cell = ((ComputerPlayer) player2).chooseMove(this, player1);
-        	cell.playPiece(currentPlayer, boardCellWidth, boardCellHeight);
+        	cell.playPiece(currentPlayer);
         	emptyCells.remove(cell);
         	currentPlayer = player1;
         }
@@ -139,27 +150,17 @@ public class TicTacToeGame {
 			cell.clearPiece();
 		}
 	}
-    
-	public void setSize() {
-		boardCellWidth = gameBoard.getWidth() / 3.0;
-		boardCellHeight = gameBoard.getHeight() / 3.0;
-		
-		for (GameCell cell : allCells) {
-			cell.setSize (boardCellWidth, boardCellHeight);
-		}
-		
-    	System.out.println(boardCellWidth);
-	}
-	
+    	
     /*********************************************
      * 
      * Process Player Moves
      * 
      *********************************************/
-    public boolean processHumanMove (GameCell cell) {   
+    public boolean processHumanMove (GameCell cell) {
     	if (cell.isEmpty()) {
-    		cell.playPiece(currentPlayer, boardCellWidth, boardCellHeight);
+    		cell.playPiece(currentPlayer);
     		emptyCells.remove(cell);
+
     		return true;
     	} else {
             Alert alert = new Alert(AlertType.ERROR);
@@ -169,6 +170,7 @@ public class TicTacToeGame {
 
             alert.showAndWait();
     	}
+    	
     	return false;
     }
     
@@ -176,7 +178,7 @@ public class TicTacToeGame {
     	if (useComputerPlayer && currentPlayer != player1) {
     		GameCell cell = ((ComputerPlayer) currentPlayer).chooseMove(this, player1);
     		if (cell != null) {
-	    		cell.playPiece(currentPlayer, boardCellWidth, boardCellHeight);
+	    		cell.playPiece(currentPlayer);
 	    		emptyCells.remove(cell);
     		} else {
     			System.out.println("Error: No computer move selected");
@@ -191,7 +193,15 @@ public class TicTacToeGame {
      * Game Cell Setters
      * 
      *********************************************/
-
+	public void setSize() {
+		boardCellWidth = gameBoard.getWidth() / 3.0;
+		boardCellHeight = gameBoard.getHeight() / 3.0;
+		
+		for (GameCell cell : allCells) {
+			cell.setSize (boardCellWidth, boardCellHeight);
+		}
+	}
+	
     /*********************************************
      * 
      * Game Cell Getters (General)
@@ -306,7 +316,7 @@ public class TicTacToeGame {
 	public GameCell getWinningMove(Player p) {
 		for (GameCell cellIterator : emptyCells) {
 			if (cellIterator.isEmpty()) {
-				cellIterator.playPiece(p, boardCellWidth, boardCellHeight);
+				cellIterator.playPiece(p);
 	        	if (playerHasWon(p)) {
 	        		cellIterator.clearPiece();
 	        		return cellIterator;
@@ -349,6 +359,15 @@ public class TicTacToeGame {
      * Check for this game's status
      * 
      *********************************************/
+    public boolean isAnimatingPiece() {
+    	for (GameCell cell : allCells) {
+    		if (cell.isAnimation()) {
+    			return true;
+    		}
+    	}
+    	return false;
+    }
+    
     public boolean boardIsEmpty() {
     	if (emptyCells.size() == 9) {
     		return true;
@@ -496,5 +515,5 @@ public class TicTacToeGame {
     	
     	setSize();
     }
-    
+
 }
