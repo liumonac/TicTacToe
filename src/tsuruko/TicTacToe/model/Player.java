@@ -1,21 +1,17 @@
 package tsuruko.TicTacToe.model;
 
-import javafx.collections.ObservableList;
-import javafx.scene.Node;
-import javafx.scene.layout.GridPane;
-
-public class player {
+public class Player {
 	public static final String XSHAPE = "X";
 	public static final String CIRCLE = "O";
 
     protected String shapeUsed = "X";
     protected String playerName = "Player 1";
 
-	public player () {
+	public Player () {
 		shapeUsed = XSHAPE;
 	}
 	
-	public player (String shapeChosen) {
+	public Player (String shapeChosen) {
 		if (shapeChosen.equals("O") || shapeChosen.equals("o")) {
 			shapeUsed = CIRCLE;
 		} else {
@@ -23,7 +19,7 @@ public class player {
 		}
 	}
 
-	public player (String shapeChosen, String playerName) {
+	public Player (String shapeChosen, String playerName) {
 		if (shapeChosen.equals("O") || shapeChosen.equals("o")) {
 			shapeUsed = CIRCLE;
 		} else {
@@ -39,15 +35,8 @@ public class player {
 	public String getShapeUsed () {
 		return shapeUsed;
 	}
-
-	public GameCell playPiece (int cellNum) {
-		GameCell newShape = new GameCell(shapeUsed, cellNum);
-		newShape.setPlayer(this);
-
-		return newShape;
-	}
 	
-	public boolean equals (player p) {
+	public boolean equals (Player p) {
 		if ( this.playerName.equals(p.getPlayerName())
 			 && this.shapeUsed.equals(p.getShapeUsed())
 			) {
