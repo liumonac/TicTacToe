@@ -11,7 +11,7 @@ public class Oshape extends GameShape {
 	public Oshape () {
 		this.radius = 50;
         circle.setRadius(radius);
-        circle.setFill(Color.WHITESMOKE);
+        circle.setFill(Color.web("#add8e6"));
         circle.setStroke(Color.BLACK);
         circle.setStrokeWidth(5);
         
@@ -22,7 +22,7 @@ public class Oshape extends GameShape {
 	public Oshape (int radius) {
 		this.radius = radius;
         circle.setRadius(radius);
-        circle.setFill(Color.WHITESMOKE);
+        circle.setFill(Color.web("#add8e6"));
         circle.setStroke(Color.BLACK);
         circle.setStrokeWidth(5);
         

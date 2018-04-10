@@ -56,6 +56,45 @@ public class GameBoardController {
         	}
         });
         
+        cell.getStyleClass().add("game-grid-cell");
+
+        
+        if (rowIndex == 0 && colIndex == 0) {
+        	cell.getStyleClass().add("left-top-corner");
+        }
+        
+        if (rowIndex == 1 && colIndex == 0) {
+        	cell.getStyleClass().add("left-edge");
+        }
+        
+        if (rowIndex == 2 && colIndex == 0) {
+        	cell.getStyleClass().add("left-bottom-corner");
+        }
+        
+        if (rowIndex == 0 && colIndex == 1) {
+        	cell.getStyleClass().add("top-edge");
+        }
+        
+        if (rowIndex == 1 && colIndex == 1) {
+        	cell.getStyleClass().add("center");
+        }
+        
+        if (rowIndex == 2 && colIndex == 1) {
+        	cell.getStyleClass().add("bottom-edge");
+        }
+        
+        if (rowIndex == 0 && colIndex == 2) {
+        	cell.getStyleClass().add("right-top-corner");
+        }
+        
+        if (rowIndex == 1 && colIndex == 2) {
+        	cell.getStyleClass().add("right-edge");
+        }
+        
+        if (rowIndex == 2 && colIndex == 2) {
+        	cell.getStyleClass().add("right-bottom-corner");
+        }
+        
         gameBoard.add(cell, colIndex, rowIndex);
     }
     
