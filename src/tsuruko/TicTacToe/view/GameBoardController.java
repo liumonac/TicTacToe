@@ -26,6 +26,11 @@ public class GameBoardController {
     @FXML
     private Label whosTurn;
     
+    /*********************************************
+     * 
+     * Initialize Game
+     * 
+     *********************************************/
     public void initalize(MainApp mainApp) {
     	this.mainApp = mainApp;
         for (int i = 0 ; i < 3 ; i++) {
@@ -56,48 +61,20 @@ public class GameBoardController {
         	}
         });
         
-        cell.getStyleClass().add("game-grid-cell");
-
-        
-        if (rowIndex == 0 && colIndex == 0) {
-        	cell.getStyleClass().add("left-top-corner");
-        }
-        
-        if (rowIndex == 1 && colIndex == 0) {
-        	cell.getStyleClass().add("left-edge");
-        }
-        
-        if (rowIndex == 2 && colIndex == 0) {
-        	cell.getStyleClass().add("left-bottom-corner");
-        }
-        
-        if (rowIndex == 0 && colIndex == 1) {
-        	cell.getStyleClass().add("top-edge");
-        }
-        
-        if (rowIndex == 1 && colIndex == 1) {
-        	cell.getStyleClass().add("center");
-        }
-        
-        if (rowIndex == 2 && colIndex == 1) {
-        	cell.getStyleClass().add("bottom-edge");
-        }
-        
-        if (rowIndex == 0 && colIndex == 2) {
-        	cell.getStyleClass().add("right-top-corner");
-        }
-        
-        if (rowIndex == 1 && colIndex == 2) {
-        	cell.getStyleClass().add("right-edge");
-        }
-        
-        if (rowIndex == 2 && colIndex == 2) {
-        	cell.getStyleClass().add("right-bottom-corner");
-        }
+        cell.setStyle();
         
         gameBoard.add(cell, colIndex, rowIndex);
     }
     
+    public void setSize() {
+    	currentGame.setSize();
+    }
+    
+    /*********************************************
+     * 
+     * Start New Game
+     * 
+     *********************************************/
     public void newGame() {   
     	currentGame.clearBoard();
     	currentGame.newGame();
@@ -119,13 +96,18 @@ public class GameBoardController {
     	gameMessage.setTitle("TicTacToe");
     }
 
+    /*********************************************
+     * 
+     * Private Helper Functions
+     * 
+     *********************************************/
     private void processWinner() {
     	if (currentGame.hasWinner()) {
         	gameMessage.setHeaderText("Game Over!");
         	gameMessage.setContentText(currentGame.getWinMesage());
         	gameMessage.showAndWait();
         	
-        	mainApp.showgameChooserDialog();
+        	mainApp.showGameChooserDialog();
         } else {
         	currentGame.toggleCurrentPlayer();
         	whosTurn.setText(  currentGame.getCurrentPlayer().getPlayerName() + "'s Turn "
@@ -137,7 +119,7 @@ public class GameBoardController {
             gameMessage.setContentText("It's a draw!");
             gameMessage.showAndWait();
             
-            mainApp.showgameChooserDialog();
+            mainApp.showGameChooserDialog();
         }
     }
 

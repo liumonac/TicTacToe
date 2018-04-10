@@ -1,42 +1,50 @@
 package tsuruko.TicTacToe.model;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.util.Duration;
 
 public class Oshape extends GameShape {
 
     private final Circle circle = new Circle();
-    private int radius = 0;
+    private double radius = 0;
     
-	public Oshape () {
-		this.radius = 50;
-        circle.setRadius(radius);
-        circle.setFill(Color.web("#add8e6"));
+	public Oshape (double width, double height) {
+		this.setMinSize(0, 0);
+		radius = (Math.min(width, height)/2) - PADDING;
+        circle.setRadius(0);
+        circle.setFill(Color.color(0,0,0,0));  //transparent
         circle.setStroke(Color.BLACK);
         circle.setStrokeWidth(5);
-        
+
         this.getChildren().add(circle);
         this.myShape = circle;
-	}
-	
-	public Oshape (int radius) {
-		this.radius = radius;
-        circle.setRadius(radius);
-        circle.setFill(Color.web("#add8e6"));
-        circle.setStroke(Color.BLACK);
-        circle.setStrokeWidth(5);
         
-        this.getChildren().add(circle);
-        this.myShape = circle;
+        animate();
 	}
 	
-	public void setLengthPos (int r) {
-		this.radius = r;
-		
-        circle.setRadius(radius);
+    /*********************************************
+     * 
+     * Setters
+     * 
+     *********************************************/
+	public void setSize (double width, double height) {
+		radius = (Math.min(width, height)/2) - PADDING;
+		circle.setRadius(radius);
 	}
-	
-	public int getRadius () {
-		return radius;
+
+    /*********************************************
+     * 
+     * Private Helper Functions
+     * 
+     *********************************************/
+	private void animate() {
+		final KeyValue val = new KeyValue(circle.radiusProperty(), radius);
+		final KeyFrame keyFrame = new KeyFrame(Duration.millis(500), val);
+
+		timeline.getKeyFrames().add(keyFrame);
+		timeline.play();
 	}
 }

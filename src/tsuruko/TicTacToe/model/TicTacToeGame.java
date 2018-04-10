@@ -18,6 +18,9 @@ public class TicTacToeGame {
     
     private boolean useComputerPlayer;
     
+    private double boardCellWidth = 100;
+    private double boardCellHeight = 100;
+    
     //avoids having to cast node using getChildren()
     private ArrayList<GameCell> allCells = new ArrayList<GameCell>();
     private ArrayList<GameCell> emptyCells = new ArrayList<GameCell>();
@@ -75,8 +78,6 @@ public class TicTacToeGame {
     	initiate();
 	}
 	
-	
-	
     /*********************************************
      * 
      * General Game Board Functionality
@@ -124,7 +125,7 @@ public class TicTacToeGame {
 
         if (useComputerPlayer && currentPlayer!= player1) {
         	GameCell cell = ((ComputerPlayer) player2).chooseMove(this, player1);
-        	cell.playPiece(currentPlayer);
+        	cell.playPiece(currentPlayer, boardCellWidth, boardCellHeight);
         	emptyCells.remove(cell);
         	currentPlayer = player1;
         }
@@ -139,6 +140,17 @@ public class TicTacToeGame {
 		}
 	}
     
+	public void setSize() {
+		boardCellWidth = gameBoard.getWidth() / 3.0;
+		boardCellHeight = gameBoard.getHeight() / 3.0;
+		
+		for (GameCell cell : allCells) {
+			cell.setSize (boardCellWidth, boardCellHeight);
+		}
+		
+    	System.out.println(boardCellWidth);
+	}
+	
     /*********************************************
      * 
      * Process Player Moves
@@ -146,7 +158,7 @@ public class TicTacToeGame {
      *********************************************/
     public boolean processHumanMove (GameCell cell) {   
     	if (cell.isEmpty()) {
-    		cell.playPiece(currentPlayer);
+    		cell.playPiece(currentPlayer, boardCellWidth, boardCellHeight);
     		emptyCells.remove(cell);
     		return true;
     	} else {
@@ -164,7 +176,7 @@ public class TicTacToeGame {
     	if (useComputerPlayer && currentPlayer != player1) {
     		GameCell cell = ((ComputerPlayer) currentPlayer).chooseMove(this, player1);
     		if (cell != null) {
-	    		cell.playPiece(currentPlayer);
+	    		cell.playPiece(currentPlayer, boardCellWidth, boardCellHeight);
 	    		emptyCells.remove(cell);
     		} else {
     			System.out.println("Error: No computer move selected");
@@ -174,6 +186,12 @@ public class TicTacToeGame {
     	return false;
     }
     
+    /*********************************************
+     * 
+     * Game Cell Setters
+     * 
+     *********************************************/
+
     /*********************************************
      * 
      * Game Cell Getters (General)
@@ -288,7 +306,7 @@ public class TicTacToeGame {
 	public GameCell getWinningMove(Player p) {
 		for (GameCell cellIterator : emptyCells) {
 			if (cellIterator.isEmpty()) {
-				cellIterator.playPiece(p);
+				cellIterator.playPiece(p, boardCellWidth, boardCellHeight);
 	        	if (playerHasWon(p)) {
 	        		cellIterator.clearPiece();
 	        		return cellIterator;
@@ -468,12 +486,15 @@ public class TicTacToeGame {
     	for (Node node : gameBoard.getChildren()) {
     		if (node.getClass() == GameCell.class) {
     			GameCell cell = (GameCell) node;
+
     			allCells.add(cell);
     			if (cell.isEmpty()) {
     				emptyCells.add(cell);
     			}
     		}
     	}
+    	
+    	setSize();
     }
     
 }

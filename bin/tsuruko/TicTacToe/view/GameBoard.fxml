@@ -6,9 +6,9 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
 
-<AnchorPane prefHeight="430.0" prefWidth="400.0" stylesheets="@GameBoardStyle.css" xmlns="http://javafx.com/javafx/9.0.4" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tsuruko.TicTacToe.view.GameBoardController">
+<AnchorPane prefHeight="430.0" prefWidth="400.0" stylesheets="@GameBoardStyle.css" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tsuruko.TicTacToe.view.GameBoardController">
    <children>
-      <GridPane fx:id="gameBoard" layoutX="55.0" layoutY="180.0" prefHeight="450.0" prefWidth="400.0" styleClass="game-grid" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="35.0">
+      <GridPane fx:id="gameBoard" layoutX="55.0" layoutY="180.0" prefHeight="400.0" prefWidth="400.0" styleClass="game-grid" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="35.0">
         <columnConstraints>
           <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
             <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />

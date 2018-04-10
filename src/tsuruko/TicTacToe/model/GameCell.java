@@ -41,10 +41,10 @@ public class GameCell extends StackPane {
 		setNeighbors();
 	}
 	
-	public GameCell(IntPair idx, Player player) {
+	public GameCell(IntPair idx, Player player, double width, double height) {
 		this.index = idx;
 		this.getChildren().clear();
-		playPiece (player);
+		playPiece (player, width, height);
 		setType();
 		setNeighbors();
 	}
@@ -54,6 +54,12 @@ public class GameCell extends StackPane {
      * Setters
      * 
      *********************************************/
+	public void setSize (double width, double height) {
+		if (myShape != null) {
+			myShape.setSize (width, height);
+		}
+	}
+	
 	public void setPlayer (Player p) {
 		myPlayer = p;
 	}
@@ -75,6 +81,50 @@ public class GameCell extends StackPane {
 			cellType = CENTER;
 		}
 	}
+	
+    public void setStyle() {
+    	int rowIndex = index.getX();
+    	int colIndex = index.getY();
+    	
+        this.getStyleClass().add("game-grid-cell");
+
+        if (rowIndex == 0 && colIndex == 0) {
+        	this.getStyleClass().add("left-top-corner");
+        }
+        
+        if (rowIndex == 1 && colIndex == 0) {
+        	this.getStyleClass().add("left-edge");
+        }
+        
+        if (rowIndex == 2 && colIndex == 0) {
+        	this.getStyleClass().add("left-bottom-corner");
+        }
+        
+        if (rowIndex == 0 && colIndex == 1) {
+        	this.getStyleClass().add("top-edge");
+        }
+        
+        if (rowIndex == 1 && colIndex == 1) {
+        	this.getStyleClass().add("center");
+        }
+        
+        if (rowIndex == 2 && colIndex == 1) {
+        	this.getStyleClass().add("bottom-edge");
+        }
+        
+        if (rowIndex == 0 && colIndex == 2) {
+        	this.getStyleClass().add("right-top-corner");
+        }
+        
+        if (rowIndex == 1 && colIndex == 2) {
+        	this.getStyleClass().add("right-edge");
+        }
+        
+        if (rowIndex == 2 && colIndex == 2) {
+        	this.getStyleClass().add("right-bottom-corner");
+        }
+    }
+    
 	
 	private void setNeighbors() {
 		if (cellType == EDGE) {
@@ -121,13 +171,13 @@ public class GameCell extends StackPane {
      * Main Functions
      * 
      *********************************************/
-	public void playPiece (Player p) {
+	public void playPiece (Player p, double width, double height) {
 		if (isEmpty) {
 			myPlayer = p;
 			if (myPlayer.getShapeUsed() == Player.CIRCLE) {
-		        myShape = new Oshape();
+		        myShape = new Oshape(width, height);
 			} else {
-				myShape = new Xshape(100);
+				myShape = new Xshape(width, height);
 			}
 			isEmpty = false;
 			this.getChildren().add(myShape);

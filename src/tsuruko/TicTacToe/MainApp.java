@@ -24,7 +24,7 @@ public class MainApp extends Application {
     	return gameController;
     }
     
-    public void showGameBoard() {
+    public void loadGameBoard() {
         try {
             // Load person overview.
             FXMLLoader loader = new FXMLLoader();
@@ -37,12 +37,17 @@ public class MainApp extends Application {
             // Give the controller access to the main app.
             gameController = loader.getController();
             gameController.initalize(this);
+            
+            primaryStage.widthProperty().addListener((obs, oldVal, newVal) -> {
+            	gameController.setSize();
+            });
+            
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
     
-    public void showgameChooserDialog() {
+    public void showGameChooserDialog() {
         try {
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(MainApp.class.getResource("view/gameChooserDialog.fxml"));
@@ -69,7 +74,7 @@ public class MainApp extends Application {
         }
     }
     
-    public void initRootLayout() {
+    public void loadRootLayout() {
         try {
             // Load root layout from FXML file.
             FXMLLoader loader = new FXMLLoader();
@@ -80,11 +85,11 @@ public class MainApp extends Application {
             Scene scene = new Scene(rootLayout);
             primaryStage.setScene(scene);
 
+
             // Give the controller access to the main app.
             RootLayoutController controller = loader.getController();
             controller.setMainApp(this);
 
-            primaryStage.show();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -95,11 +100,13 @@ public class MainApp extends Application {
         this.primaryStage = primaryStage;
         this.primaryStage.setTitle("TicTacToe");
 
-        initRootLayout();
+        loadRootLayout();
         
-        showGameBoard();
+        loadGameBoard();
         
-        showgameChooserDialog();
+        primaryStage.show();
+        
+        showGameChooserDialog();
     }
 
 	public static void main(String[] args) {
