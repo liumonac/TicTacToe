@@ -2,6 +2,7 @@ package tsuruko.TicTacToe.model;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.util.Duration;
@@ -22,8 +23,6 @@ public class Oshape extends GameShape {
 
         this.getChildren().add(circle);
         this.myShape = circle;
-        
-        animate();
 	}
 	
     /*********************************************
@@ -38,20 +37,16 @@ public class Oshape extends GameShape {
 
     /*********************************************
      * 
-     * Private Helper Functions
+     * Animation
      * 
      *********************************************/
-	private void animate() {
+	public Timeline startAnimation() {
 		playingAnimation = true;
 		final KeyValue val = new KeyValue(circle.radiusProperty(), radius);
 		final KeyFrame keyFrame = new KeyFrame(Duration.millis(500), val);
 
 		timeline.getKeyFrames().add(keyFrame);
 		
-		timeline.setOnFinished(event -> {
-			playingAnimation = false;
-		});
-		
-		timeline.play();
+		return timeline;
 	}
 }

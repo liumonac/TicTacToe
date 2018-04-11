@@ -28,9 +28,10 @@ abstract public class GameShape extends StackPane {
 		return playingAnimation;
 	}
 	
+
     /*********************************************
      * 
-     * Getters
+     * Setters
      * 
      *********************************************/
 	public void setStrokeColor (Color color) {
@@ -39,10 +40,15 @@ abstract public class GameShape extends StackPane {
 		}
 	}
 	
+	public void stopAnimation() {
+		playingAnimation = false;
+	}
+	
     /*********************************************
      * 
      * Abstract required functions
      * 
      *********************************************/
 	abstract public void setSize (double width, double height);
+	abstract public Timeline startAnimation ();
 }

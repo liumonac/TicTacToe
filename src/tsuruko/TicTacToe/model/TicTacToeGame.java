@@ -3,6 +3,7 @@ package tsuruko.TicTacToe.model;
 import java.util.ArrayList;
 import java.util.Random;
 
+import javafx.animation.Timeline;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -135,10 +136,19 @@ public class TicTacToeGame {
 		setWhoFirst();
 
         if (useComputerPlayer && currentPlayer!= player1) {
-        	GameCell cell = ((ComputerPlayer) player2).chooseMove(this, player1);
-        	cell.playPiece(currentPlayer);
-        	emptyCells.remove(cell);
-        	currentPlayer = player1;
+        	GameCell cell = processComputerMove();
+        	
+        	if (cell != null) {
+        		cell.playPiece(currentPlayer);
+
+        		Timeline compT = cell.getMyShape().startAnimation();
+        		compT.setOnFinished(computerEvent -> {
+        			cell.getMyShape().stopAnimation();
+        			toggleCurrentPlayer();
+        		});
+        		compT.play();
+        	}
+        	
         }
 	}
 	
@@ -174,18 +184,18 @@ public class TicTacToeGame {
     	return false;
     }
     
-    public boolean processComputerMove () {
+    public GameCell processComputerMove () {
+    	GameCell cell = null;
     	if (useComputerPlayer && currentPlayer != player1) {
-    		GameCell cell = ((ComputerPlayer) currentPlayer).chooseMove(this, player1);
+    		cell = ((ComputerPlayer) currentPlayer).chooseMove(this, player1);
     		if (cell != null) {
 	    		cell.playPiece(currentPlayer);
 	    		emptyCells.remove(cell);
     		} else {
     			System.out.println("Error: No computer move selected");
     		}
-    		return true;
     	}
-    	return false;
+    	return cell;
     }
     
     /*********************************************
@@ -376,14 +386,14 @@ public class TicTacToeGame {
     }
     
     public boolean isDraw () {
-    	if (emptyCells.isEmpty()) {
+    	if (emptyCells.isEmpty() && !hasWinner() ) {
     		return true;
     	}
     	return false;
     }
     
     public boolean hasWinner() {
-    	if (checkWinner()) {
+    	if ( playerHasWon (player1) || playerHasWon (player2) ) {
     		currentPlayer = winCells.get(0).getPlayer();
     		
     		for (GameCell cell : winCells) {
@@ -391,18 +401,6 @@ public class TicTacToeGame {
     		}
     		return true;
     	}
-    	return false;
-    }
-
-    private boolean checkWinner () {
-    	if (playerHasWon (player1)) {
-    		return true;
-    	}
-    	
-    	if (playerHasWon (player2)) {
-    		return true;
-    	}
-
     	return false;
     }
 

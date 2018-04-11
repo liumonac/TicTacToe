@@ -1,5 +1,6 @@
 package tsuruko.TicTacToe.view;
 
+import javafx.animation.Timeline;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
@@ -12,10 +13,7 @@ import tsuruko.TicTacToe.model.GameCell;
 import tsuruko.TicTacToe.model.IntPair;
 
 public class GameBoardController {
-    
-    // Reference to the main application
-    private MainApp mainApp;
-    
+
     TicTacToeGame currentGame;
     
     Alert gameMessage = new Alert(AlertType.INFORMATION);
@@ -32,7 +30,11 @@ public class GameBoardController {
      * 
      *********************************************/
     public void initalize(MainApp mainApp) {
-    	this.mainApp = mainApp;
+
+    	gameMessage.setOnHidden(event -> {        	
+        		mainApp.showGameChooserDialog();
+        	});
+    	
         for (int i = 0 ; i < 3 ; i++) {
             for (int j = 0; j < 3; j++) {
                 addCell(i, j);
@@ -46,20 +48,36 @@ public class GameBoardController {
     private void addCell (int rowIndex, int colIndex) {
         GameCell cell = new GameCell(new IntPair (rowIndex, colIndex));
         
-        cell.setOnMouseClicked(event -> {
+        cell.setOnMouseClicked(mouseEvent -> {
         	if (currentGame.isAnimatingPiece()) {
         		return;  //make players wait for their turn
         	}
         	
-        	Node source = (Node) event.getSource();
+        	Node source = (Node) mouseEvent.getSource();
         	if (source.getClass() == GameCell.class) { 
-	            GameCell clickedCell = (GameCell) event.getSource();
+	            GameCell clickedCell = (GameCell) mouseEvent.getSource();
 	            
 	        	if (currentGame.processHumanMove(clickedCell)) {
-	        		processWinner();
-		        	if (currentGame.processComputerMove()) {
+	        		Timeline humanT = clickedCell.getMyShape().startAnimation();
+
+	        		humanT.setOnFinished(humanEvent -> {
+	        			clickedCell.getMyShape().stopAnimation();
 		        		processWinner();
-		        	}
+		        		
+		        		GameCell computerMove = currentGame.processComputerMove();
+			        	if (computerMove != null) {
+			        		Timeline compT = computerMove.getMyShape().startAnimation();
+			        		compT.setOnFinished(computerEvent -> {
+			        			computerMove.getMyShape().stopAnimation();
+			        			processWinner();
+			        		});
+			        		compT.play();
+			        	}
+		        		
+	        		});
+	        		
+	        		humanT.play();
+	        		
 	        	}
 	        	
         	}
@@ -109,9 +127,7 @@ public class GameBoardController {
     	if (currentGame.hasWinner()) {
         	gameMessage.setHeaderText("Game Over!");
         	gameMessage.setContentText(currentGame.getWinMesage());
-        	gameMessage.showAndWait();
-        	
-        	mainApp.showGameChooserDialog();
+        	gameMessage.show();
         } else {
         	currentGame.toggleCurrentPlayer();
         	whosTurn.setText(  currentGame.getCurrentPlayer().getPlayerName() + "'s Turn "
@@ -121,9 +137,7 @@ public class GameBoardController {
         if (currentGame.isDraw()) {
             gameMessage.setHeaderText("No Winner!");
             gameMessage.setContentText("It's a draw!");
-            gameMessage.showAndWait();
-            
-            mainApp.showGameChooserDialog();
+            gameMessage.show();
         }
     }
 

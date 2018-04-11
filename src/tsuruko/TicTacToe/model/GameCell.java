@@ -153,6 +153,10 @@ public class GameCell extends StackPane {
 		return cellType;
 	}
 	
+	public GameShape getMyShape () {
+		return myShape;
+	}
+	
 	public IntPair getCorner1 () {
 		return cornerNeighbor1;
 	}

@@ -38,8 +38,6 @@ public class Xshape extends GameShape {
 	    this.getChildren().add(line);
 	    this.getChildren().add(line2);
 	    this.myShape = line;
-	    
-	    animate();
 	}
 	
     /*********************************************
@@ -64,10 +62,10 @@ public class Xshape extends GameShape {
 
     /*********************************************
      * 
-     * Private Helper Functions
+     * Animation
      * 
      *********************************************/
-	private void animate() {
+	public Timeline startAnimation() {
 		playingAnimation = true;
 		final KeyValue xValue1 = new KeyValue(line.endXProperty(), length);
 		final KeyValue yValue1 = new KeyValue(line.endYProperty(), length);
@@ -84,10 +82,6 @@ public class Xshape extends GameShape {
 		timeline.getKeyFrames().add(yKeyFrame1);
 		timeline.getKeyFrames().add(yKeyFrame2);
 		
-		timeline.setOnFinished(event -> {
-			playingAnimation = false;
-		});
-		
-		timeline.play();
+		return timeline;
 	}
 }
