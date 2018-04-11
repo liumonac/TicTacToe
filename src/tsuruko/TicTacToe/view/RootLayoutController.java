@@ -18,10 +18,12 @@ public class RootLayoutController {
         System.exit(0);
     }
     
+    @FXML
     public void handleNewGame() {
     	mainApp.showGameChooserDialog();
     }
     
+    @FXML
     public void handleAbout() {
         Alert alert = new Alert(AlertType.INFORMATION);
         alert.setTitle("TicTacToe");

@@ -1,3 +1,11 @@
+.button { 
+    -fx-background-color: -fx-outer-border, -fx-inner-border, -fx-body-color; 
+    -fx-background-insets: 0, 1, 2;
+    -fx-background-radius: 5, 4, 3;
+}
+
+
+
 .game-grid {
     -fx-background-color: lightblue;
     -fx-padding: 10;
