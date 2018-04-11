@@ -279,6 +279,24 @@ public class TicTacToeGame {
 		
 		return filledCells;
     }
+
+    public ArrayList<GameCell> getFilledCells (Player p, int cellType) {
+    	ArrayList<GameCell> filledCells = new ArrayList<>();
+    	
+    	if (cellType == GameCell.CORNER 
+    			|| cellType == GameCell.EDGE 
+    			|| cellType == GameCell.CENTER
+    		) {
+	        for (GameCell cell : allCells) {
+	        	if (cell.isPlayedBy(p) && cell.getCellType() == cellType) {
+	        		filledCells.add(cell);
+	        	}
+	            break;
+	        }
+    	}
+		
+		return filledCells;
+    }
     
 	/*********************************************
 	 * 
