@@ -163,7 +163,8 @@ public class GameCell extends StackPane {
 		return neighbor2;
 	}
 	
-	public IntPair getNonMatchNeighbor (IntPair p) {
+	//get the neighbor opposite of the one specified
+	public IntPair getOtherNeighbor (IntPair p) {
 		if (neighbor1.equals(p)) {
 			return neighbor2;
 		}

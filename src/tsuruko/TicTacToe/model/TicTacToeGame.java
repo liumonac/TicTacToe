@@ -185,7 +185,12 @@ public class TicTacToeGame {
     }
     
     public GameCell processComputerMove () {
+    	if (emptyCells.size() == 0) {
+    		return null;
+    	}
+    	
     	GameCell cell = null;
+    	
     	if (useComputerPlayer && currentPlayer != player1) {
     		cell = ((ComputerPlayer) currentPlayer).chooseMove(this, player1);
     		if (cell != null) {
