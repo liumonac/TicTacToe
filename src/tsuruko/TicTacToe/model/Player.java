@@ -1,45 +1,69 @@
 package tsuruko.TicTacToe.model;
 
 public class Player {
-	public static final String XSHAPE = "X";
-	public static final String CIRCLE = "O";
+	public static final String PLAYER1 = "X";
+	public static final String PLAYER2 = "O";
 
-    protected String shapeUsed = "X";
-    protected String playerName = "Player 1";
+    private String playerType = "X";
+    private String playerName = "Player 1";
 
+    /*********************************************
+     * 
+     * Constructors
+     * 
+     *********************************************/
 	public Player () {
-		shapeUsed = XSHAPE;
+		playerType = PLAYER1;
 	}
 	
 	public Player (String shapeChosen) {
 		if (shapeChosen.equals("O") || shapeChosen.equals("o")) {
-			shapeUsed = CIRCLE;
+			playerType = PLAYER2;
+			this.playerName = "Player 2";
 		} else {
-			shapeUsed = XSHAPE;
+			playerType = PLAYER1;
+			this.playerName = "Player 1";
 		}
-	}
-
-	public Player (String shapeChosen, String playerName) {
-		if (shapeChosen.equals("O") || shapeChosen.equals("o")) {
-			shapeUsed = CIRCLE;
-		} else {
-			shapeUsed = XSHAPE;
-		}
-		this.playerName = playerName;
 	}
 	
+    /*********************************************
+     * 
+     * Getters
+     * 
+     *********************************************/
 	public String getPlayerName () {
 		return playerName;
 	}
 	
-	public String getShapeUsed () {
-		return shapeUsed;
+	public String getPlayerType () {
+		return playerType;
 	}
 	
+    /*********************************************
+     * 
+     * Setters
+     * 
+     *********************************************/
+	public void setPlayerName (boolean isComputer) {
+		if (isComputer) {
+			playerName = "Computer";
+		} else {
+			if (playerType == PLAYER1) {
+				playerName = "Player 1";
+			} else {
+				playerName = "Player 2";
+			}
+		}
+
+	}
+	
+    /*********************************************
+     * 
+     * Check State
+     * 
+     *********************************************/
 	public boolean equals (Player p) {
-		if ( this.playerName.equals(p.getPlayerName())
-			 && this.shapeUsed.equals(p.getShapeUsed())
-			) {
+		if (playerType.equals(p.getPlayerType())) {
 			return true;
 		}
 		

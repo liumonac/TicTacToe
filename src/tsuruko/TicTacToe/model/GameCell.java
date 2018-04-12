@@ -186,7 +186,7 @@ public class GameCell extends StackPane {
 	public void playPiece (Player p) {
 		if (isEmpty) {
 			myPlayer = p;
-			if (myPlayer.getShapeUsed() == Player.CIRCLE) {
+			if (myPlayer.getPlayerType() == Player.PLAYER2) {
 		        myShape = new Oshape(cellWidth, cellHeight);
 			} else {
 				myShape = new Xshape(cellWidth, cellHeight);
