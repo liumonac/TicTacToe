@@ -116,7 +116,7 @@ public class TicTacToeGame {
     	int whoFirst = rand.nextInt(2);
     	
     	if (whoFirst == 0  
-    			&& 1 == 0  //debugging
+    			&& 1 == 1  //debugging
     	   ) {
     		computerPlayer = player2;
     		humanPlayer    = player1;
@@ -352,7 +352,6 @@ public class TicTacToeGame {
 	}
 	
 	/*
-	 * 
 	 * 	Fork: Create an opportunity where the player has two threats to win 
 	 *   (two non-blocked lines of 2).
 	 *   No extra code for scenarios where forking requires picking center.
@@ -361,35 +360,36 @@ public class TicTacToeGame {
 	 *   	o ! -		x ! -
 	 *   	- - -		- - -
 	 *   
-	 * case 1: 
+	 * Case 1: 
 	 *   x corner and center; neighbor corners are empty, pick adjacent edge
 	 * 	 	x o -	x ! -
 	 * 	 	! x -	o x -
 	 * 	 	- - o	- - o
 	 * 
-	 * case 2: 
+	 * Case 2: 
 	 *   x adjacent edges; 3 neighbor corners are empty; pick the shared corner
 	 *   	! x -
 	 *   	x o -
 	 *   	- o -
 	 * 
-	 * case 3: 
+	 * Case 3: 
 	 *   x edge and center; neighbor corners empty; pick corner with empty opposite corner
 	 * 	  ! x !
 	 * 	  - x o
 	 * 	  - o -
 	 */
-	public GameCell getForkMove(Player player) {
+	public ArrayList<GameCell> getForkMoves(Player player) {
+		ArrayList<GameCell> possibleForks = new ArrayList<GameCell>();
 		GameCell center = getGameCell(1, 1);
 		
-		//case 1
+		//Case 1
 		if (center.isPlayedBy(player)) {
 			for (GameCell corner : getFilledCells(player, GameCell.CORNER)) {
 				GameCell n1 = getGameCell(corner.getNeighbor1());
 				if (n1.isEmpty()) {
 					GameCell c1 = getGameCell(n1.getOtherNeighbor(corner.getIdx()));
 					if (c1.isEmpty()) {
-						return n1;
+						possibleForks.add(n1);
 					}
 				}
 				
@@ -397,14 +397,14 @@ public class TicTacToeGame {
 				if (n2.isEmpty()) {
 					GameCell c2 = getGameCell(n1.getOtherNeighbor(corner.getIdx()));
 					if (c2.isEmpty()) {
-						return n2;
+						possibleForks.add(n2);
 					}
 				}
 			}
 
 		}
 		
-		//case 2
+		//Case 2
 		for (GameCell corner : getEmptyCells(GameCell.CORNER)) {
 			GameCell n1 = getGameCell(corner.getNeighbor1());
 			GameCell n2 = getGameCell(corner.getNeighbor2());
@@ -412,38 +412,28 @@ public class TicTacToeGame {
 				GameCell c1 = getGameCell(n1.getOtherNeighbor(corner.getIdx()));
 				GameCell c2 = getGameCell(n2.getOtherNeighbor(corner.getIdx()));
 				if (c1.isEmpty() && c2.isEmpty()) {
-					return corner;
+					possibleForks.add(corner);
 				}
 			}
 		}
 		
-		//case 3
+		//Case 3
 		if (center.isPlayedBy(player)) {
 			for (GameCell edge : getFilledCells(player, GameCell.EDGE)) {
 				GameCell n1 = getGameCell(edge.getNeighbor1());
 				GameCell n2 = getGameCell(edge.getNeighbor2());
 				if (n1.isEmpty() && n2.isEmpty()) {
 					if (getOppositeCell(n1).isEmpty()) {
-						if (getOppositeCell(n2).isEmpty()) {
-							//pick a random one
-				    		Random rand = new Random();
-				    		int pickn = rand.nextInt(2);
-				    		if (pickn == 0) {
-				    			return n1;
-				    		} else {
-				    			return n2;
-				    		}
-						}
-						return n1;
+						possibleForks.add(n1);
 					}
 					if (getOppositeCell(n2).isEmpty()) {
-						return n2;
+						possibleForks.add(n2);
 					}
 				}
 			}
 		}
 		
-		return null;
+		return possibleForks;
 	}
 	
 	//if this is the second move of the game,
@@ -529,18 +519,38 @@ public class TicTacToeGame {
 
 			//Fork
 			if (cellPicked == null) {
-				cellPicked = getForkMove(computerPlayer);
+		    	ArrayList<GameCell> possibleMoves = getForkMoves(computerPlayer);
+		    	cellPicked = pickRandomCell(possibleMoves);
 			}
 
-			//Block an opponent's fork: 
-			//If there is only one possible fork for the opponent, 
-			//the player should block it. 
-			//Otherwise, the player should block any forks in any way that simultaneously allows them to create two in a row. 
-			//Otherwise, the player should create a two in a row to force the opponent into defending, as long as it doesn't result in them creating a fork. 
-			//For example, if "X" has two opposite corners and "O" has the center, "O" must not play a corner in order to win. 
-			//(Playing a corner in this scenario creates a fork for "X" to win.)
+			//Block an opponent's fork
 			if (cellPicked == null) {
-				cellPicked = getForkMove (humanPlayer);
+				ArrayList<GameCell> possibleMoves = getForkMoves (computerPlayer);
+
+				//Case 1: If there is only one possible fork for the opponent, 
+				//        the player should block it.
+				if (possibleMoves.size() == 1) {
+					cellPicked = possibleMoves.get(0);
+				}
+				
+				//Case 2: Otherwise, the player should block any forks in any way that 
+				//        simultaneously allows them to create two in a row. 
+				 
+				/*
+				 * Case 3: Otherwise, the player should create a two in a row to force 
+				 *         the opponent into  defending, as long as it doesn't result in 
+				 *         them creating a fork. 
+				 *         
+				 * For example, if "X" has two opposite corners and "O" has the center, 
+				 *    "O" must not play a corner in order to win. 
+				 *    (Playing a corner in this scenario creates a fork for "X" to win.)
+				 *      
+				 * Block case 3: (block perspective, playing as o) 
+				 *   x corner and opposite; o center; o cannot pick corner
+				 * 	  x - -
+				 * 	  - o -
+				 * 	  - - x
+				 */
 			}
 
 	    	//Center: A player marks the center.
