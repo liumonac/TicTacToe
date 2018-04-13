@@ -9,6 +9,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
+import tsuruko.TicTacToe.util.CellType;
 
 public class TicTacToeGame {
 	private GridPane gameBoard;
@@ -271,19 +272,14 @@ public class TicTacToeGame {
 		return filledCells;
     }
 
-    public ArrayList<GameCell> getFilledCells (Player p, int cellType) {
+    public ArrayList<GameCell> getFilledCells (Player p, CellType cellType) {
     	ArrayList<GameCell> filledCells = new ArrayList<>();
     	
-    	if (cellType == GameCell.CORNER 
-    			|| cellType == GameCell.EDGE 
-    			|| cellType == GameCell.CENTER
-    		) {
-	        for (GameCell cell : allCells) {
-	        	if (cell.isPlayedBy(p) && cell.getCellType() == cellType) {
-	        		filledCells.add(cell);
-	        	}
-	        }
-    	}
+        for (GameCell cell : allCells) {
+        	if (cell.isPlayedBy(p) && cell.getCellType() == cellType) {
+        		filledCells.add(cell);
+        	}
+        }
 		
 		return filledCells;
     }
@@ -297,23 +293,14 @@ public class TicTacToeGame {
 		return emptyCells;
     }
     
-    public ArrayList<GameCell> getEmptyCells (int cellType) {
+    public ArrayList<GameCell> getEmptyCells (CellType cellType) {
     	ArrayList<GameCell> filteredCells = new ArrayList<>();
     	
-    	if (cellType == GameCell.CORNER 
-    			|| cellType == GameCell.EDGE 
-    			|| cellType == GameCell.CENTER
-    		) {
-    		
-            for (GameCell cell : emptyCells) {
-            	if (cell.getCellType() == cellType) {
-            		filteredCells.add(cell);
-            	}
-            }
-            
-    	} else {
-    		System.out.println("Error: Invalid Game Cell Type");
-    	}
+        for (GameCell cell : emptyCells) {
+        	if (cell.getCellType() == cellType) {
+        		filteredCells.add(cell);
+        	}
+        }
 
 		return filteredCells;
     }
@@ -394,7 +381,7 @@ public class TicTacToeGame {
 		
 		//Case 1
 		if (center.isPlayedBy(player)) {
-			for (GameCell corner : getFilledCells(player, GameCell.CORNER)) {
+			for (GameCell corner : getFilledCells(player, CellType.CORNER)) {
 				GameCell n1 = getGameCell(corner.getNeighbor(0));
 				if (n1.isEmpty()) {
 					GameCell c1 = getGameCell(n1.getOtherNeighbor(corner.getIdx()));
@@ -415,7 +402,7 @@ public class TicTacToeGame {
 		}
 		
 		//Case 2
-		for (GameCell corner : getEmptyCells(GameCell.CORNER)) {
+		for (GameCell corner : getEmptyCells(CellType.CORNER)) {
 			GameCell n1 = getGameCell(corner.getNeighbor(0));
 			GameCell n2 = getGameCell(corner.getNeighbor(1));
 			if (n1.isPlayedBy(player) && n2.isPlayedBy(player)) {
@@ -429,7 +416,7 @@ public class TicTacToeGame {
 		
 		//Case 3
 		if (center.isPlayedBy(player)) {
-			for (GameCell edge : getFilledCells(player, GameCell.EDGE)) {
+			for (GameCell edge : getFilledCells(player, CellType.EDGE)) {
 				GameCell n1 = getGameCell(edge.getNeighbor(0));
 				GameCell n2 = getGameCell(edge.getNeighbor(1));
 				if (n1.isEmpty() && n2.isEmpty()) {
@@ -444,7 +431,7 @@ public class TicTacToeGame {
 		}
 		
 		//Case 4
-		for (GameCell corner : getFilledCells(player, GameCell.CORNER)) {
+		for (GameCell corner : getFilledCells(player, CellType.CORNER)) {
 			GameCell opposite = getOppositeCell(corner);
 			if (opposite.isPlayedBy(player)) {
 				for (int i = 0; i < 2; i++) {
@@ -472,7 +459,7 @@ public class TicTacToeGame {
 		ArrayList<GameCell> filledCells = getFilledCells();
 		
 		if (filledCells.size() == 1) {
-        	if (filledCells.get(0).getCellType() == GameCell.EDGE) {
+        	if (filledCells.get(0).getCellType() == CellType.EDGE) {
         		result = filledCells.get(0);
         	}
     	}
@@ -509,7 +496,7 @@ public class TicTacToeGame {
 		} else {
 			center = getCenter (false);
 			//check empty center cases
-			for (GameCell edge : getEmptyCells(GameCell.EDGE)) {
+			for (GameCell edge : getEmptyCells(CellType.EDGE)) {
 				//if 1 neighbor is p and other is empty true;
 				for (int i = 0; i < 2; i++) {
 					GameCell c1 = getGameCell(edge.getNeighbor(i));
@@ -527,7 +514,7 @@ public class TicTacToeGame {
 			}
 				
 				
-			for (GameCell corner : getEmptyCells(GameCell.CORNER)) {
+			for (GameCell corner : getEmptyCells(CellType.CORNER)) {
 				//if neighbor1 is empty and neighbor1's other neighbor is p true;
 				//if neighbor1 is p and neigbor1's other neighbor is empty true;
 				for (int i = 0; i < 2; i++) {
@@ -661,7 +648,7 @@ public class TicTacToeGame {
 			//Opposite corner: If the opponent is in the corner, the player plays the opposite corner.
 	    	//Add functionality to pick a random corner if multiple are already played by opponent
 			if (cellPicked == null) {
-		    	ArrayList<GameCell> emptyCorners = getEmptyCells(GameCell.CORNER);
+		    	ArrayList<GameCell> emptyCorners = getEmptyCells(CellType.CORNER);
 		    	ArrayList<GameCell> possibleMoves = new ArrayList<>();
 		    	
 		    	for (GameCell cell : emptyCorners) {
@@ -683,7 +670,7 @@ public class TicTacToeGame {
 			//Empty side: The player plays in a middle square on any of the 4 sides.
 	    	//Add functionality to pick a random edge if multiple are empty
 			if (cellPicked == null) {
-				cellPicked = pickRandomCell(getEmptyCells(GameCell.EDGE));
+				cellPicked = pickRandomCell(getEmptyCells(CellType.EDGE));
 			}
 		}
 

@@ -2,18 +2,15 @@ package tsuruko.TicTacToe.model;
 
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
+import tsuruko.TicTacToe.util.*;
 
 public class GameCell extends StackPane {
-	public static final int CENTER = 0;
-	public static final int EDGE = 1;
-	public static final int CORNER = 2;
-	
 	private GameShape myShape;
 	private Player myPlayer;
 	
 	private boolean isEmpty = true;
 	private IntPair index;
-	private int cellType = -1;
+	private CellType cellType;
 	
 	IntPair[] neighbors = {new IntPair(-1,-1), new IntPair(-1,-1)};
 
@@ -44,15 +41,6 @@ public class GameCell extends StackPane {
 		setNeighbors();
 	}
 	
-	public GameCell(IntPair idx, Player player, double width, double height) {
-		this.setMinSize(0, 0);
-		this.index = idx;
-		this.getChildren().clear();
-		playPiece (player);
-		setType();
-		setNeighbors();
-	}
-	
     /*********************************************
      * 
      * Setters
@@ -77,15 +65,15 @@ public class GameCell extends StackPane {
 	
 	private void setType() {
 		if (index.equals(0,0) || index.equals(0,2) || index.equals(2,0) || index.equals(2,2)) {
-			cellType = CORNER;
+			cellType = CellType.CORNER;
 		}
 		
 		if (index.equals(0,1) || index.equals(1,0) || index.equals(1,2) || index.equals(2,1)) {
-			cellType = EDGE;
+			cellType = CellType.EDGE;
 		}
 		
 		if (index.equals(1,1)) {
-			cellType = CENTER;
+			cellType = CellType.CENTER;
 		}
 	}
 	
@@ -146,7 +134,7 @@ public class GameCell extends StackPane {
 		return index;
 	}
 	
-	public int getCellType () {
+	public CellType getCellType () {
 		return cellType;
 	}
 	
@@ -184,7 +172,7 @@ public class GameCell extends StackPane {
 	public void playPiece (Player p) {
 		if (isEmpty) {
 			myPlayer = p;
-			if (myPlayer.getPlayerType() == Player.PLAYER2) {
+			if (myPlayer.getPlayerType() == PlayerType.PLAYER2) {
 		        myShape = new Oshape(cellWidth, cellHeight);
 			} else {
 				myShape = new Xshape(cellWidth, cellHeight);
@@ -230,7 +218,7 @@ public class GameCell extends StackPane {
      *********************************************/
 	private void setNeighbors() {
 		
-		if (cellType == EDGE) {
+		if (cellType == CellType.EDGE) {
 			if (index.getX() == 1) {
 				neighbors[0] = new IntPair (0, index.getY());
 				neighbors[1] = new IntPair (2, index.getY());
@@ -240,7 +228,7 @@ public class GameCell extends StackPane {
 			}
 		}
 		
-		if (cellType == CORNER) {
+		if (cellType == CellType.CORNER) {
 			if (index.getX() == 0) {
 				neighbors[0] = new IntPair (0, 1);
 			} else {

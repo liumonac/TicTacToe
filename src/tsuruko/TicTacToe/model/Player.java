@@ -1,10 +1,9 @@
 package tsuruko.TicTacToe.model;
 
-public class Player {
-	public static final String PLAYER1 = "X";
-	public static final String PLAYER2 = "O";
+import tsuruko.TicTacToe.util.PlayerType;
 
-    private String playerType = "X";
+public class Player {
+    private PlayerType playerType;
     private String playerName = "Player 1";
 
     /*********************************************
@@ -13,15 +12,15 @@ public class Player {
      * 
      *********************************************/
 	public Player () {
-		playerType = PLAYER1;
+		playerType = PlayerType.PLAYER1;
 	}
 	
 	public Player (String shapeChosen) {
 		if (shapeChosen.equals("O") || shapeChosen.equals("o")) {
-			playerType = PLAYER2;
+			playerType = PlayerType.PLAYER2;
 			this.playerName = "Player 2";
 		} else {
-			playerType = PLAYER1;
+			playerType = PlayerType.PLAYER1;
 			this.playerName = "Player 1";
 		}
 	}
@@ -35,7 +34,7 @@ public class Player {
 		return playerName;
 	}
 	
-	public String getPlayerType () {
+	public PlayerType getPlayerType () {
 		return playerType;
 	}
 	
@@ -48,7 +47,7 @@ public class Player {
 		if (isComputer) {
 			playerName = "Computer";
 		} else {
-			if (playerType == PLAYER1) {
+			if (playerType == PlayerType.PLAYER1) {
 				playerName = "Player 1";
 			} else {
 				playerName = "Player 2";
