@@ -20,10 +20,11 @@ public class MainApp extends Application {
     private BorderPane rootLayout;
     private GameBoardController gameController;
     
-    public GameBoardController getGameBoardController() {
-    	return gameController;
-    }
-    
+	/*********************************************
+	 * 
+	 * Loaders
+	 * 
+	 *********************************************/
     public void loadGameBoard() {
         try {
             // Load person overview.
@@ -42,33 +43,6 @@ public class MainApp extends Application {
             	gameController.setSize();
             });
             
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-    
-    public void showGameOptionsDialog() {
-        try {
-            FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(MainApp.class.getResource("view/gameOptionsDialog.fxml"));
-            AnchorPane page = (AnchorPane) loader.load();
-
-            // Create the dialog Stage.
-            Stage dialogStage = new Stage();
-            dialogStage.setTitle("Choose Game Mode");
-            dialogStage.initModality(Modality.WINDOW_MODAL);
-            dialogStage.initOwner(primaryStage);
-            Scene scene = new Scene(page);
-            dialogStage.setScene(scene);
-
-            // Set the person into the controller.
-            GameOptionsController controller = loader.getController();
-            controller.setDialogStage(dialogStage);
-            controller.setMainApp(this);
-
-            // Show the dialog and wait until the user closes it
-            dialogStage.showAndWait();
-
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -113,7 +87,48 @@ public class MainApp extends Application {
 		launch(args);
 	}
 	
+	/*********************************************
+	 * 
+	 * Show Dialogs
+	 * 
+	 *********************************************/
+    public void showGameOptionsDialog() {
+        try {
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(MainApp.class.getResource("view/gameOptionsDialog.fxml"));
+            AnchorPane page = (AnchorPane) loader.load();
+
+            // Create the dialog Stage.
+            Stage dialogStage = new Stage();
+            dialogStage.setTitle("Choose Game Mode");
+            dialogStage.initModality(Modality.WINDOW_MODAL);
+            dialogStage.initOwner(primaryStage);
+            Scene scene = new Scene(page);
+            dialogStage.setScene(scene);
+
+            // Set the person into the controller.
+            GameOptionsController controller = loader.getController();
+            controller.setDialogStage(dialogStage);
+            controller.setMainApp(this);
+
+            // Show the dialog and wait until the user closes it
+            dialogStage.showAndWait();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+	
+	/*********************************************
+	 * 
+	 * Getters
+	 * 
+	 *********************************************/
     public Stage getPrimaryStage() {
         return primaryStage;
+    }
+    
+    public GameBoardController getGameBoardController() {
+    	return gameController;
     }
 }

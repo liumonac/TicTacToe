@@ -19,6 +19,11 @@ public class GameOptionsController {
         this.dialogStage = dialogStage;
     }
 
+	/*********************************************
+	 * 
+	 * Toggle Options
+	 * 
+	 *********************************************/
     @FXML
     public void handlePlayer1() {
     	useComputerPlayer = true;
@@ -30,7 +35,23 @@ public class GameOptionsController {
     }
     
     @FXML
-    private void handleExit() {
+    public void handleDebugOn() {
+    	mainApp.getGameBoardController().setDebug(true);
+    }
+    
+    @FXML
+    public void handleDebugOff() {
+    	mainApp.getGameBoardController().setDebug(false);
+    }
+    
+	
+	/*********************************************
+	 * 
+	 * Submit
+	 * 
+	 *********************************************/
+    @FXML
+    private void handleOk() {
     	mainApp.getGameBoardController().newGame(useComputerPlayer);
     	dialogStage.close();
     }

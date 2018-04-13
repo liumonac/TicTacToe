@@ -128,5 +128,15 @@ public class GameBoardController {
     	toggleAi.setText(currentGame.toggleComputerPlayer());
     	checkGameStatus();
     }
+    
+    public void setDebug(boolean on) {
+    	if (on) {
+    		toggleAi.setVisible(true);
+    		toggleAi.setDisable(false);
+    	} else {
+    		toggleAi.setVisible(false);
+    		toggleAi.setDisable(true);
+    	}
+    }
 
 }
