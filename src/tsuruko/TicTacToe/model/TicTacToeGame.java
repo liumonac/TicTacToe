@@ -132,6 +132,7 @@ public class TicTacToeGame {
         	
         	if (cell != null) {
         		cell.playPiece(currentPlayer);
+        		emptyCells.remove(cell);
 
         		Timeline compT = cell.getMyShape().startAnimation();
         		compT.setOnFinished(computerEvent -> {
@@ -317,14 +318,17 @@ public class TicTacToeGame {
 		return filteredCells;
     }
     
-    public GameCell getEmptyCenter() {
-        for (GameCell cell : emptyCells) {
-        	if (cell.getCellType() == GameCell.CENTER) {
-        		if (cell.isEmpty()) {
-        			return cell;
-        		}
-        	}
-        }
+    public GameCell getCenter(boolean isEmpty) {
+    	GameCell center = getGameCell (1, 1);
+    	
+    	if (isEmpty) {
+    		if (center.isEmpty()) {
+    			return center;
+    		}
+    	} else {
+    		return center;
+    	}
+
         return null;
     }
     
@@ -372,11 +376,17 @@ public class TicTacToeGame {
 	 *   	x o -
 	 *   	- o -
 	 * 
-	 * Case 3: 
+	 * Case 3: (2 options)
 	 *   x edge and center; neighbor corners empty; pick corner with empty opposite corner
 	 * 	  ! x !
 	 * 	  - x o
 	 * 	  - o -
+	 * 
+	 * Case 4: (2 options)
+	 *   x opposite corners; corner free; play corner
+	 * 	  x - !
+	 * 	  - o -
+	 * 	  ! - x
 	 */
 	public ArrayList<GameCell> getForkMoves(Player player) {
 		ArrayList<GameCell> possibleForks = new ArrayList<GameCell>();
@@ -385,7 +395,7 @@ public class TicTacToeGame {
 		//Case 1
 		if (center.isPlayedBy(player)) {
 			for (GameCell corner : getFilledCells(player, GameCell.CORNER)) {
-				GameCell n1 = getGameCell(corner.getNeighbor1());
+				GameCell n1 = getGameCell(corner.getNeighbor(0));
 				if (n1.isEmpty()) {
 					GameCell c1 = getGameCell(n1.getOtherNeighbor(corner.getIdx()));
 					if (c1.isEmpty()) {
@@ -393,7 +403,7 @@ public class TicTacToeGame {
 					}
 				}
 				
-				GameCell n2 = getGameCell(corner.getNeighbor2());
+				GameCell n2 = getGameCell(corner.getNeighbor(1));
 				if (n2.isEmpty()) {
 					GameCell c2 = getGameCell(n1.getOtherNeighbor(corner.getIdx()));
 					if (c2.isEmpty()) {
@@ -406,8 +416,8 @@ public class TicTacToeGame {
 		
 		//Case 2
 		for (GameCell corner : getEmptyCells(GameCell.CORNER)) {
-			GameCell n1 = getGameCell(corner.getNeighbor1());
-			GameCell n2 = getGameCell(corner.getNeighbor2());
+			GameCell n1 = getGameCell(corner.getNeighbor(0));
+			GameCell n2 = getGameCell(corner.getNeighbor(1));
 			if (n1.isPlayedBy(player) && n2.isPlayedBy(player)) {
 				GameCell c1 = getGameCell(n1.getOtherNeighbor(corner.getIdx()));
 				GameCell c2 = getGameCell(n2.getOtherNeighbor(corner.getIdx()));
@@ -420,14 +430,33 @@ public class TicTacToeGame {
 		//Case 3
 		if (center.isPlayedBy(player)) {
 			for (GameCell edge : getFilledCells(player, GameCell.EDGE)) {
-				GameCell n1 = getGameCell(edge.getNeighbor1());
-				GameCell n2 = getGameCell(edge.getNeighbor2());
+				GameCell n1 = getGameCell(edge.getNeighbor(0));
+				GameCell n2 = getGameCell(edge.getNeighbor(1));
 				if (n1.isEmpty() && n2.isEmpty()) {
 					if (getOppositeCell(n1).isEmpty()) {
 						possibleForks.add(n1);
 					}
 					if (getOppositeCell(n2).isEmpty()) {
 						possibleForks.add(n2);
+					}
+				}
+			}
+		}
+		
+		//Case 4
+		for (GameCell corner : getFilledCells(player, GameCell.CORNER)) {
+			GameCell opposite = getOppositeCell(corner);
+			if (opposite.isPlayedBy(player)) {
+				for (int i = 0; i < 2; i++) {
+					GameCell e1 = getGameCell(corner.getNeighbor(i));
+					if (e1.isEmpty()) {
+						GameCell c = getGameCell(e1.getOtherNeighbor(corner.getIdx()));
+						if (c.isEmpty()) {
+							GameCell e2 = getGameCell(c.getOtherNeighbor(e1.getIdx()));
+							if (e2.isEmpty()) {
+								possibleForks.add(c);
+							}
+						}
 					}
 				}
 			}
@@ -463,6 +492,68 @@ public class TicTacToeGame {
     	return result;
 	}
 	
+	private ArrayList<GameCell> makeTwoInARow (Player p) {
+		ArrayList<GameCell> possibleMoves = new ArrayList<GameCell>();
+		
+		GameCell center = getCenter(true);
+		
+		if (center != null) {
+			//check opposite corners, opposite edges
+			for (GameCell playedCell : getFilledCells() ) {
+				if (playedCell.isPlayedBy(p)) {
+					if (getOppositeCell(playedCell).isEmpty()) {
+						possibleMoves.add(center);
+					}
+				}
+			}
+		} else {
+			center = getCenter (false);
+			//check empty center cases
+			for (GameCell edge : getEmptyCells(GameCell.EDGE)) {
+				//if 1 neighbor is p and other is empty true;
+				for (int i = 0; i < 2; i++) {
+					GameCell c1 = getGameCell(edge.getNeighbor(i));
+					if (c1.isEmpty()) {
+						GameCell c2 = getGameCell(edge.getOtherNeighbor(c1.getIdx()));
+						if (c2.isPlayedBy(p)) {
+							possibleMoves.add(edge);
+						}
+					}
+				}
+				//we know that center is filled
+				if (center.isPlayedBy(p) && getOppositeCell(edge).isEmpty()) {
+					possibleMoves.add(edge);
+				}
+			}
+				
+				
+			for (GameCell corner : getEmptyCells(GameCell.CORNER)) {
+				//if neighbor1 is empty and neighbor1's other neighbor is p true;
+				//if neighbor1 is p and neigbor1's other neighbor is empty true;
+				for (int i = 0; i < 2; i++) {
+					GameCell e = getGameCell(corner.getNeighbor(i));
+					GameCell c = getGameCell(e.getOtherNeighbor(corner.getIdx()));
+					if (e.isEmpty()) {
+						if (c.isPlayedBy(p)) {
+							possibleMoves.add(corner);
+						}
+					}
+					if (e.isPlayedBy(p)) {
+						if (c.isEmpty()) {
+							possibleMoves.add(corner);
+						}
+					}
+				}
+				//we know that center is filled
+				if (center.isPlayedBy(p) && getOppositeCell(corner).isEmpty()) {
+					possibleMoves.add(corner);
+				}
+			}
+		}
+		
+		return possibleMoves;
+	}
+	
     /*********************************************
      * 
      * AI logic for picking the best move
@@ -496,10 +587,10 @@ public class TicTacToeGame {
 	
 		    	switch (chooseOption) {
 		        	case 0:
-		        		cellPicked = getGameCell (firstMove.getNeighbor1());
+		        		cellPicked = getGameCell (firstMove.getNeighbor(0));
 		                break;
 		            case 1:
-		            	cellPicked = getGameCell (firstMove.getNeighbor2());
+		            	cellPicked = getGameCell (firstMove.getNeighbor(1));
 		            	break;
 		            case 2:
 		            	cellPicked = getOppositeCell(firstMove);
@@ -525,21 +616,17 @@ public class TicTacToeGame {
 
 			//Block an opponent's fork
 			if (cellPicked == null) {
-				ArrayList<GameCell> possibleMoves = getForkMoves (computerPlayer);
-
+				ArrayList<GameCell> possibleMoves = getForkMoves (humanPlayer);
 				//Case 1: If there is only one possible fork for the opponent, 
 				//        the player should block it.
 				if (possibleMoves.size() == 1) {
 					cellPicked = possibleMoves.get(0);
 				}
 				
-				//Case 2: Otherwise, the player should block any forks in any way that 
-				//        simultaneously allows them to create two in a row. 
-				 
 				/*
-				 * Case 3: Otherwise, the player should create a two in a row to force 
-				 *         the opponent into  defending, as long as it doesn't result in 
-				 *         them creating a fork. 
+				 * Case 2: Otherwise, the player should block any forks in any way that 
+				 *         simultaneously allows them to create two in a row as long as it 
+				 *         doesn't result in them creating a fork. 
 				 *         
 				 * For example, if "X" has two opposite corners and "O" has the center, 
 				 *    "O" must not play a corner in order to win. 
@@ -551,11 +638,24 @@ public class TicTacToeGame {
 				 * 	  - o -
 				 * 	  - - x
 				 */
+				if (possibleMoves.size() > 1) {
+					possibleMoves = makeTwoInARow (computerPlayer);
+					for (GameCell myMove : possibleMoves) {
+						myMove.playPiece(computerPlayer);
+						GameCell myNextMove = getWinningMove(computerPlayer);
+						for (GameCell opponent : getForkMoves (humanPlayer)) {
+							if (!opponent.equals(myNextMove)) {
+								cellPicked = myMove;
+							}
+						}
+						myMove.clearPiece();
+					}
+				}
 			}
 
 	    	//Center: A player marks the center.
 			if (cellPicked == null) {
-				cellPicked = getEmptyCenter();
+				cellPicked = getCenter(true);
 			}
 
 			//Opposite corner: If the opponent is in the corner, the player plays the opposite corner.

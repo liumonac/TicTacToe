@@ -15,9 +15,8 @@ public class GameCell extends StackPane {
 	private IntPair index;
 	private int cellType = -1;
 	
-	IntPair neighbor1 = null;
-	IntPair neighbor2 = null;
-	
+	IntPair[] neighbors = {new IntPair(-1,-1), new IntPair(-1,-1)};
+
 	//cell size control
 	private double cellWidth = 0;
 	private double cellHeight = 0;
@@ -155,20 +154,19 @@ public class GameCell extends StackPane {
 		return myShape;
 	}
 	
-	public IntPair getNeighbor1 () {
-		return neighbor1;
-	}
-	
-	public IntPair getNeighbor2 () {
-		return neighbor2;
+	public IntPair getNeighbor (int idx) {
+		if (idx > 1) {
+			return null;
+		}
+		return neighbors[idx];
 	}
 	
 	//get the neighbor opposite of the one specified
 	public IntPair getOtherNeighbor (IntPair p) {
-		if (neighbor1.equals(p)) {
-			return neighbor2;
+		if (neighbors[0].equals(p)) {
+			return neighbors[1];
 		}
-		return neighbor1;
+		return neighbors[0];
 	}
 	
 	public boolean isAnimation () {
@@ -218,36 +216,41 @@ public class GameCell extends StackPane {
 		return isEmpty;
 	}
 	
+	public boolean equals (GameCell cell) {
+		if (this.index.equals(cell.getIdx())) {
+			return true;
+		}
+		return false;
+	}
+	
     /*********************************************
      * 
      * Private Helper Functions
      * 
      *********************************************/
 	private void setNeighbors() {
-		neighbor1 = new IntPair (-1, -1);
-		neighbor2 = new IntPair (-1, -1);
 		
 		if (cellType == EDGE) {
 			if (index.getX() == 1) {
-				neighbor1 = new IntPair (0, index.getY());
-				neighbor2 = new IntPair (2, index.getY());
+				neighbors[0] = new IntPair (0, index.getY());
+				neighbors[1] = new IntPair (2, index.getY());
 			} else {
-				neighbor1 = new IntPair (index.getX(), 0);
-				neighbor2 = new IntPair (index.getX(), 2);
+				neighbors[0] = new IntPair (index.getX(), 0);
+				neighbors[1] = new IntPair (index.getX(), 2);
 			}
 		}
 		
 		if (cellType == CORNER) {
 			if (index.getX() == 0) {
-				neighbor1 = new IntPair (0, 1);
+				neighbors[0] = new IntPair (0, 1);
 			} else {
-				neighbor1 = new IntPair (2, 1);
+				neighbors[0] = new IntPair (2, 1);
 			}
 			
 			if (index.getY() == 0) {
-				neighbor2 = new IntPair (1, 0);
+				neighbors[1] = new IntPair (1, 0);
 			} else {
-				neighbor2 = new IntPair (1, 2);
+				neighbors[1] = new IntPair (1, 2);
 			}
 		}
 	}
