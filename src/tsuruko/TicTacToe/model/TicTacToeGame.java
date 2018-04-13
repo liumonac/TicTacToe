@@ -116,7 +116,7 @@ public class TicTacToeGame {
     	int whoFirst = rand.nextInt(2);
     	
     	if (whoFirst == 0  
-    			&& 1 == 1  //debugging
+    			|| 1 == 1  //debugging
     	   ) {
     		computerPlayer = player2;
     		humanPlayer    = player1;

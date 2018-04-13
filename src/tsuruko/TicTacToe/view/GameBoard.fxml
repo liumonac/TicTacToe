@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
 
-<AnchorPane prefHeight="430.0" prefWidth="400.0" stylesheets="@GameBoardStyle.css" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tsuruko.TicTacToe.view.GameBoardController">
+<AnchorPane prefHeight="430.0" prefWidth="400.0" stylesheets="@GameBoardStyle.css" xmlns="http://javafx.com/javafx/9.0.4" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tsuruko.TicTacToe.view.GameBoardController">
    <children>
       <GridPane fx:id="gameBoard" layoutX="55.0" layoutY="180.0" prefHeight="400.0" prefWidth="400.0" styleClass="game-grid" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="35.0">
         <columnConstraints>
@@ -22,6 +22,6 @@
         </rowConstraints>
       </GridPane>
       <Label fx:id="whosTurn" layoutX="14.0" layoutY="14.0" />
-      <Button fx:id="toggleAi" layoutX="335.0" layoutY="10.0" mnemonicParsing="false" onMouseClicked="#toggleAI" prefHeight="25.0" prefWidth="51.0" text="AI OFF" />
+      <Button fx:id="toggleAi" layoutX="328.0" layoutY="10.0" mnemonicParsing="false" onMouseClicked="#toggleAI" prefHeight="27.0" prefWidth="60.0" text="AI OFF" />
    </children>
 </AnchorPane>
