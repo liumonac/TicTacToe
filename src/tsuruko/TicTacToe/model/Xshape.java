@@ -5,6 +5,11 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.util.Duration;
 
+/*********************************************
+ * 
+ * Draw an "X"
+ * 
+ *********************************************/
 public class Xshape extends GameShape {
 
     private final Line line = new Line();

@@ -1,9 +1,16 @@
 package tsuruko.TicTacToe.model;
 
+import java.util.ArrayList;
+
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import tsuruko.TicTacToe.util.*;
 
+/*********************************************
+ * 
+ * Represents one of the squares on the game board
+ * 
+ *********************************************/
 public class GameCell extends StackPane {
 	private GameShape myShape;
 	private Player myPlayer;
@@ -12,11 +19,11 @@ public class GameCell extends StackPane {
 	private IntPair index;
 	private CellType cellType;
 	
-	IntPair[] neighbors = {new IntPair(-1,-1), new IntPair(-1,-1)};
+	ArrayList<IntPair> neighbors = new ArrayList<IntPair>();
 
 	//cell size control
-	private double cellWidth = 0;
-	private double cellHeight = 0;
+	private double cellWidth = 100;
+	private double cellHeight = 100;
 	
     /*********************************************
      * 
@@ -39,6 +46,7 @@ public class GameCell extends StackPane {
 		isEmpty = true;
 		setType();
 		setNeighbors();
+		setStyle();
 	}
 	
     /*********************************************
@@ -63,71 +71,16 @@ public class GameCell extends StackPane {
 		myShape.setStrokeColor(color);
 	}
 	
-	private void setType() {
-		if (index.equals(0,0) || index.equals(0,2) || index.equals(2,0) || index.equals(2,2)) {
-			cellType = CellType.CORNER;
-		}
-		
-		if (index.equals(0,1) || index.equals(1,0) || index.equals(1,2) || index.equals(2,1)) {
-			cellType = CellType.EDGE;
-		}
-		
-		if (index.equals(1,1)) {
-			cellType = CellType.CENTER;
-		}
-	}
-	
-    public void setStyle() {
-    	int rowIndex = index.getX();
-    	int colIndex = index.getY();
-    	
-        this.getStyleClass().add("game-grid-cell");
-
-        if (rowIndex == 0 && colIndex == 0) {
-        	this.getStyleClass().add("left-top-corner");
-        }
-        
-        if (rowIndex == 1 && colIndex == 0) {
-        	this.getStyleClass().add("left-edge");
-        }
-        
-        if (rowIndex == 2 && colIndex == 0) {
-        	this.getStyleClass().add("left-bottom-corner");
-        }
-        
-        if (rowIndex == 0 && colIndex == 1) {
-        	this.getStyleClass().add("top-edge");
-        }
-        
-        if (rowIndex == 1 && colIndex == 1) {
-        	this.getStyleClass().add("center");
-        }
-        
-        if (rowIndex == 2 && colIndex == 1) {
-        	this.getStyleClass().add("bottom-edge");
-        }
-        
-        if (rowIndex == 0 && colIndex == 2) {
-        	this.getStyleClass().add("right-top-corner");
-        }
-        
-        if (rowIndex == 1 && colIndex == 2) {
-        	this.getStyleClass().add("right-edge");
-        }
-        
-        if (rowIndex == 2 && colIndex == 2) {
-        	this.getStyleClass().add("right-bottom-corner");
-        }
-    }
-    
-	
     /*********************************************
      * 
      * Getters
      * 
      *********************************************/
-	public Player getPlayer () {
-		return myPlayer;
+	public String getPlayerName () {
+		if (myPlayer != null) {
+			return myPlayer.getPlayerName();
+		}
+		return null;
 	}
 	
 	public IntPair getIdx () {
@@ -142,19 +95,16 @@ public class GameCell extends StackPane {
 		return myShape;
 	}
 	
-	public IntPair getNeighbor (int idx) {
-		if (idx > 1) {
-			return null;
-		}
-		return neighbors[idx];
+	public ArrayList<IntPair> getNeighbors () {
+		return neighbors;
 	}
 	
 	//get the neighbor opposite of the one specified
 	public IntPair getOtherNeighbor (IntPair p) {
-		if (neighbors[0].equals(p)) {
-			return neighbors[1];
+		if (neighbors.get(0).equals(p)) {
+			return neighbors.get(1);
 		}
-		return neighbors[0];
+		return neighbors.get(0);
 	}
 	
 	public boolean isAnimation () {
@@ -163,6 +113,15 @@ public class GameCell extends StackPane {
 		}
 		return false;
 	}
+	
+	
+	//get idx across the board from this one
+    public IntPair getOppositeIdx () {
+    	int x = getOppositeIdx (index.getX());
+    	int y = getOppositeIdx (index.getY());
+    	
+    	return new IntPair (x, y);
+    }
 	
     /*********************************************
      * 
@@ -204,42 +163,113 @@ public class GameCell extends StackPane {
 		return isEmpty;
 	}
 	
-	public boolean equals (GameCell cell) {
-		if (this.index.equals(cell.getIdx())) {
-			return true;
-		}
-		return false;
-	}
-	
     /*********************************************
      * 
      * Private Helper Functions
      * 
      *********************************************/
-	private void setNeighbors() {
+	private void setType() {
+		if (index.equals(0,0) || index.equals(0,2) || index.equals(2,0) || index.equals(2,2)) {
+			cellType = CellType.CORNER;
+		}
 		
+		if (index.equals(0,1) || index.equals(1,0) || index.equals(1,2) || index.equals(2,1)) {
+			cellType = CellType.EDGE;
+		}
+		
+		if (index.equals(1,1)) {
+			cellType = CellType.CENTER;
+		}
+	}
+	
+	private void setNeighbors() {
 		if (cellType == CellType.EDGE) {
 			if (index.getX() == 1) {
-				neighbors[0] = new IntPair (0, index.getY());
-				neighbors[1] = new IntPair (2, index.getY());
+				neighbors.add(new IntPair (0, index.getY()));
+				neighbors.add(new IntPair (2, index.getY()));
 			} else {
-				neighbors[0] = new IntPair (index.getX(), 0);
-				neighbors[1] = new IntPair (index.getX(), 2);
+				neighbors.add(new IntPair (index.getX(), 0));
+				neighbors.add(new IntPair (index.getX(), 2));
 			}
 		}
 		
 		if (cellType == CellType.CORNER) {
 			if (index.getX() == 0) {
-				neighbors[0] = new IntPair (0, 1);
+				neighbors.add(new IntPair (0, 1));
 			} else {
-				neighbors[0] = new IntPair (2, 1);
+				neighbors.add(new IntPair (2, 1));
 			}
 			
 			if (index.getY() == 0) {
-				neighbors[1] = new IntPair (1, 0);
+				neighbors.add(new IntPair (1, 0));
 			} else {
-				neighbors[1] = new IntPair (1, 2);
+				neighbors.add(new IntPair (1, 2));
 			}
 		}
 	}
+	
+    
+    private int getOppositeIdx (int idx) {
+    	int result = -1;
+    	
+    	switch (idx) {
+    		case 0:
+    			result = 2;
+    			break;
+    		case 1:
+    			result = 1;
+    			break;
+    		case 2:
+    			result = 0;
+    			break;
+    	}
+    	
+    	return result;
+    }
+    
+    private void setStyle() {
+    	int rowIndex = index.getX();
+    	int colIndex = index.getY();
+    	
+        this.getStyleClass().add("game-grid-cell");
+
+        //sets which edges to put borders on
+        if (rowIndex == 0 && colIndex == 0) {
+        	this.getStyleClass().add("left-top-corner");
+        }
+        
+        if (rowIndex == 1 && colIndex == 0) {
+        	this.getStyleClass().add("left-edge");
+        }
+        
+        if (rowIndex == 2 && colIndex == 0) {
+        	this.getStyleClass().add("left-bottom-corner");
+        }
+        
+        if (rowIndex == 0 && colIndex == 1) {
+        	this.getStyleClass().add("top-edge");
+        }
+        
+        if (rowIndex == 1 && colIndex == 1) {
+        	this.getStyleClass().add("center");
+        }
+        
+        if (rowIndex == 2 && colIndex == 1) {
+        	this.getStyleClass().add("bottom-edge");
+        }
+        
+        if (rowIndex == 0 && colIndex == 2) {
+        	this.getStyleClass().add("right-top-corner");
+        }
+        
+        if (rowIndex == 1 && colIndex == 2) {
+        	this.getStyleClass().add("right-edge");
+        }
+        
+        if (rowIndex == 2 && colIndex == 2) {
+        	this.getStyleClass().add("right-bottom-corner");
+        }
+    }
+    
+
 }

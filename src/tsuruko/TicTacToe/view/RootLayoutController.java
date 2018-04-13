@@ -20,7 +20,12 @@ public class RootLayoutController {
     
     @FXML
     public void handleNewGame() {
-    	mainApp.showGameChooserDialog();
+    	mainApp.getGameBoardController().newGame();
+    }
+    
+    @FXML
+    public void handleOptions() {
+    	mainApp.showGameOptionsDialog();
     }
     
     @FXML

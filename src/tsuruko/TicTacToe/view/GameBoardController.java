@@ -1,6 +1,5 @@
 package tsuruko.TicTacToe.view;
 
-import javafx.animation.Timeline;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
@@ -34,9 +33,11 @@ public class GameBoardController {
      * 
      *********************************************/
     public void initalize(MainApp mainApp) {
+    	gameMessage.setTitle("TicTacToe");
+    	gameMessage.setHeaderText("Game Over!");
 
     	gameMessage.setOnHidden(event -> {        	
-        		mainApp.showGameChooserDialog();
+        		mainApp.showGameOptionsDialog();
         	});
     	
         for (int i = 0 ; i < 3 ; i++) {
@@ -44,7 +45,7 @@ public class GameBoardController {
                 addCell(i, j);
             }
         }
-    	currentGame = new TicTacToeGame(gameBoard);
+    	currentGame = new TicTacToeGame(gameBoard, this);
     	newGame();
     }
 
@@ -62,38 +63,27 @@ public class GameBoardController {
 	            GameCell clickedCell = (GameCell) mouseEvent.getSource();
 	            
 	        	if (currentGame.processHumanMove(clickedCell)) {
-	        		Timeline humanT = clickedCell.getMyShape().startAnimation();
-
-	        		humanT.setOnFinished(humanEvent -> {
-	        			clickedCell.getMyShape().stopAnimation();
-		        		processWinner();
-		        		
-		        		GameCell computerMove = currentGame.processComputerMove();
-			        	if (computerMove != null) {
-			        		Timeline compT = computerMove.getMyShape().startAnimation();
-			        		compT.setOnFinished(computerEvent -> {
-			        			computerMove.getMyShape().stopAnimation();
-			        			processWinner();
-			        		});
-			        		compT.play();
-			        	}
-		        		
-	        		});
-	        		
-	        		humanT.play();
-	        		
+	        		checkGameStatus();
 	        	}
 	        	
         	}
         });
         
-        cell.setStyle();
-        
         gameBoard.add(cell, colIndex, rowIndex);
     }
     
+    /*********************************************
+     * 
+     * Setters
+     * 
+     *********************************************/
     public void setSize() {
     	currentGame.setSize();
+    }
+    
+    public void setTurn(String turn) {
+    	whosTurn.setText(turn);
+    	checkGameStatus();
     }
     
     /*********************************************
@@ -103,9 +93,6 @@ public class GameBoardController {
      *********************************************/
     public void newGame() {   
     	currentGame.newGame();
-    	
-    	whosTurn.setText(currentGame.getCurrentPlayerTurn());
-    	
     	gameMessage.setTitle("TicTacToe");
     }
     
@@ -117,8 +104,6 @@ public class GameBoardController {
     	currentGame.newGame(useComputer);
     	
     	whosTurn.setText(currentGame.getCurrentPlayerTurn());
-    	
-    	gameMessage.setTitle("TicTacToe");
     }
 
     /*********************************************
@@ -126,20 +111,10 @@ public class GameBoardController {
      * Private Helper Functions
      * 
      *********************************************/
-    private void processWinner() {
-    	if (currentGame.hasWinner()) {
-        	gameMessage.setHeaderText("Game Over!");
-        	gameMessage.setContentText(currentGame.getWinMesage());
+    private void checkGameStatus() {
+    	if (currentGame.gameOver()) {
+        	gameMessage.setContentText(currentGame.getGameStatus());
         	gameMessage.show();
-        } else {
-        	currentGame.toggleCurrentPlayer();
-        	whosTurn.setText(currentGame.getCurrentPlayerTurn());
-        }
-        
-        if (currentGame.isDraw()) {
-            gameMessage.setHeaderText("No Winner!");
-            gameMessage.setContentText("It's a draw!");
-            gameMessage.show();
         }
     }
     
@@ -150,24 +125,8 @@ public class GameBoardController {
      *********************************************/
     @FXML
     private void toggleAI() {
-    	currentGame.toggleComputerPlayer();
-    	
-    	if (toggleAi.getText().equals("AI OFF")) {
-    		toggleAi.setText("AI ON");
-    	} else {
-    		toggleAi.setText("AI OFF");
-    	}
-    	
-		GameCell computerMove = currentGame.processComputerMove();
-    	if (computerMove != null) {
-    		Timeline compT = computerMove.getMyShape().startAnimation();
-    		compT.setOnFinished(computerEvent -> {
-    			computerMove.getMyShape().stopAnimation();
-    			processWinner();
-    		});
-    		compT.play();
-    	}
-    	
+    	toggleAi.setText(currentGame.toggleComputerPlayer());
+    	checkGameStatus();
     }
 
 }

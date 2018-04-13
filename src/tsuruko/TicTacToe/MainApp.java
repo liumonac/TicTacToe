@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import tsuruko.TicTacToe.view.GameBoardController;
 import tsuruko.TicTacToe.view.RootLayoutController;
-import tsuruko.TicTacToe.view.gameChooserController;
+import tsuruko.TicTacToe.view.GameOptionsController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.stage.Modality;
@@ -47,10 +47,10 @@ public class MainApp extends Application {
         }
     }
     
-    public void showGameChooserDialog() {
+    public void showGameOptionsDialog() {
         try {
             FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(MainApp.class.getResource("view/gameChooserDialog.fxml"));
+            loader.setLocation(MainApp.class.getResource("view/gameOptionsDialog.fxml"));
             AnchorPane page = (AnchorPane) loader.load();
 
             // Create the dialog Stage.
@@ -62,7 +62,7 @@ public class MainApp extends Application {
             dialogStage.setScene(scene);
 
             // Set the person into the controller.
-            gameChooserController controller = loader.getController();
+            GameOptionsController controller = loader.getController();
             controller.setDialogStage(dialogStage);
             controller.setMainApp(this);
 
@@ -106,7 +106,7 @@ public class MainApp extends Application {
         
         primaryStage.show();
         
-        showGameChooserDialog();
+        showGameOptionsDialog();
     }
 
 	public static void main(String[] args) {

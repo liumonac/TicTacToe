@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane prefHeight="144.0" prefWidth="300.0" stylesheets="@GameBoardStyle.css" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tsuruko.TicTacToe.view.GameOptionsController">
+   <children>
+      <Label contentDisplay="CENTER" layoutX="14.0" layoutY="34.0" prefWidth="104.0" text="Number of Players:" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="166.0" AnchorPane.topAnchor="30.0" />
+      <Button cancelButton="true" layoutX="115.0" layoutY="161.0" mnemonicParsing="false" onMouseClicked="#handleExit" prefWidth="75.0" text="Ok" AnchorPane.bottomAnchor="15.0" AnchorPane.rightAnchor="70.0" />
+      <ToggleButton layoutX="79.0" layoutY="31.0" mnemonicParsing="false" onMouseClicked="#handlePlayer1" prefWidth="75.0" selected="true" text="1 Player" AnchorPane.rightAnchor="90.0" AnchorPane.topAnchor="30.0">
+         <toggleGroup>
+            <ToggleGroup fx:id="NumOfPlayers" />
+         </toggleGroup>
+      </ToggleButton>
+      <ToggleButton layoutX="161.0" layoutY="31.0" mnemonicParsing="false" onMouseClicked="#handlePlayer2" prefWidth="75.0" text="2 Players" toggleGroup="$NumOfPlayers" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="30.0" />
+   </children>
+</AnchorPane>

@@ -7,6 +7,11 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.util.Duration;
 
+/*********************************************
+ * 
+ * Draw an "O"
+ * 
+ *********************************************/
 public class Oshape extends GameShape {
 
     private final Circle circle = new Circle();

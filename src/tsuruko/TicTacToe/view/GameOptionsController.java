@@ -4,11 +4,13 @@ import javafx.fxml.FXML;
 import javafx.stage.Stage;
 import tsuruko.TicTacToe.MainApp;
 
-public class gameChooserController {
+public class GameOptionsController {
 
     private MainApp mainApp;
     private Stage dialogStage;
     
+    private boolean useComputerPlayer = true;
+
     public void setMainApp(MainApp mainApp) {
         this.mainApp = mainApp;
     }
@@ -19,18 +21,17 @@ public class gameChooserController {
 
     @FXML
     public void handlePlayer1() {
-    	mainApp.getGameBoardController().newGame(true);
-    	dialogStage.close();
+    	useComputerPlayer = true;
     }
     
     @FXML
     public void handlePlayer2() {
-    	mainApp.getGameBoardController().newGame(false);
-    	dialogStage.close();
+    	useComputerPlayer = false;
     }
     
     @FXML
     private void handleExit() {
+    	mainApp.getGameBoardController().newGame(useComputerPlayer);
     	dialogStage.close();
     }
     
