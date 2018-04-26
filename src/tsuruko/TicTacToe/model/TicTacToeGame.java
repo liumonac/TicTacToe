@@ -25,17 +25,16 @@ public class TicTacToeGame {
     private Player computerPlayer;
 
     private boolean useComputerPlayer = false;
+    
     private GameOptions AiType = GameOptions.NewellSimon;
+	private GameStatus gameStatus = GameStatus.NONE;
     
     //Board Variables
-	private GridPane gameBoard;
-	private GameStatus gameStatus = GameStatus.NONE;
-	
     private double boardCellWidth = 100;
     private double boardCellHeight = 100;
     
     //avoids having to cast node using getChildren()
-    private GameCell[] allCells = new GameCell[9];
+    private GameCell[] gameBoard = new GameCell[9];
 
     private ArrayList<GameCell> filledCells = new ArrayList<GameCell>();
     private ArrayList<GameCell> emptyCells = new ArrayList<GameCell>();
@@ -55,14 +54,36 @@ public class TicTacToeGame {
      * 
      *********************************************/
 	public TicTacToeGame() {
-		gameBoard = new GridPane();
-    	initiate();
+    	player1 = new Player();
+    	player2 = new Player("o");
+    	
+    	emptyCells = new ArrayList<>();
 	}
 	
-	public TicTacToeGame(GridPane g, GameBoardController c) {
+	public TicTacToeGame(GridPane display, GameBoardController c) {
+    	player1 = new Player();
+    	player2 = new Player("o");
+    	
+    	emptyCells = new ArrayList<>();
+    	
 		controller = c;
-		gameBoard = g;
-    	initiate();
+
+    	//save the gridPane's cell children to avoid having to case Node 
+    	//and avoid dealing with the scene group child for future logic
+    	int i = 0;
+    	for (Node node : display.getChildren()) {
+    		if (node.getClass() == GameCell.class) {
+    			GameCell cell = (GameCell) node;
+
+    			gameBoard[i] = cell;
+    			i++;
+    			if (cell.isEmpty()) {
+    				emptyCells.add(cell);
+    			}
+    		}
+    	}
+    	
+    	setSize(display.getWidth(), display.getHeight());
 	}
 	
     /*********************************************
@@ -117,7 +138,7 @@ public class TicTacToeGame {
     	Random rand = new Random();
     	int whoFirst = rand.nextInt(2);
     	
-    	if (whoFirst == 0 && 1==0) {
+    	if (whoFirst == 0) {
     		computerPlayer = player2;
     		humanPlayer    = player1;
     	} else {
@@ -218,7 +239,7 @@ public class TicTacToeGame {
     
     private GameCell processComputerMove() {
     	//don't play if there are no more moves
-    	if (emptyCells.size() == 0) {
+    	if (emptyCells.isEmpty()) {
     		return null;
     	}
     	
@@ -253,11 +274,11 @@ public class TicTacToeGame {
      * Game Cell Setters
      * 
      *********************************************/
-	public void setSize() {
-		boardCellWidth = gameBoard.getWidth() / 3.0;
-		boardCellHeight = gameBoard.getHeight() / 3.0;
+	public void setSize(double width, double height) {
+		boardCellWidth = width / 3.0;
+		boardCellHeight = height / 3.0;
 		
-		for (GameCell cell : allCells) {
+		for (GameCell cell : gameBoard) {
 			cell.setSize (boardCellWidth, boardCellHeight);
 		}
 	}
@@ -275,7 +296,7 @@ public class TicTacToeGame {
     }
 
     public GameCell getGameCell (int row, int column) {
-    	return allCells[row*3 + column];
+    	return gameBoard[row*3 + column];
     }
     
     public GameCell getOppositeCell (GameCell cell) {
@@ -289,25 +310,20 @@ public class TicTacToeGame {
      * Minimax Algorithm Recursion Helper
      * 
      *********************************************/
-    private int MinimaxRecurse (int level, Player player, GameCell tryMove, ArrayList<GameCell> movesLeft) {
+    private int MinimaxRecurse (int depth, Player player, GameCell tryMove, ArrayList<GameCell> movesLeft) {
     	tryMove.playPiece(player);
     	
-    	level = level + 1;
+    	//for debugging
+    	depth = depth + 1;
 
     	if (playerHasWon(humanPlayer)) {
-    		System.out.println("level: " + level + " coord: " + tryMove.getIdx().getX() + " " + tryMove.getIdx().getY() + ": " + -10);
-    		
     		tryMove.clearPiece();
     		return -10;
     	} else if (playerHasWon(computerPlayer)) {
-    		System.out.println("level: " + level + " coord: " + tryMove.getIdx().getX() + " " + tryMove.getIdx().getY() + ": " + 10);
-    		
     		tryMove.clearPiece();
     		return 10;
     		//Draw
     	} else if (emptyCells.isEmpty()) {
-    		System.out.println("level: " + level + " coord: " + tryMove.getIdx().getX() + " " + tryMove.getIdx().getY() + ": " + 0);
-    		
     		tryMove.clearPiece();
     		return 0;
     	}
@@ -321,19 +337,17 @@ public class TicTacToeGame {
     	int result = 0;
     	for (GameCell cell : availableMoves) {
     		if (player.equals(computerPlayer)) {
-    			int score = MinimaxRecurse (level, humanPlayer, cell, availableMoves);
-    			if (score > result) {
+    			int score = MinimaxRecurse (depth, humanPlayer, cell, availableMoves);
+    			if (score < result) {
     				result = score;
     			}
     		} else {
-    			int score = MinimaxRecurse (level, computerPlayer, cell, availableMoves);
-    			if (score < result) {
+    			int score = MinimaxRecurse (depth, computerPlayer, cell, availableMoves);
+    			if (score > result) {
     				result = score;
     			}
     		}
     	}
-		System.out.println("continue level: " + level + " coord: " + tryMove.getIdx().getX() + " " + tryMove.getIdx().getY() + ": " + result);
-		
     	tryMove.clearPiece();
     	return result;
 
@@ -344,15 +358,6 @@ public class TicTacToeGame {
      * AI using Minimax Algorithm
      * 
      *********************************************/
-    /*
-     * 
-     * 1. return a value if a terminal state is found (+10, 0, -10)
-     * 2. go through available spots on the board
-     * 3. call the minimax function on each available spot (recursion)
-     * 4. evaluate returning values from function calls
-     * 5. and return the best value
-     */
-    
     public GameCell chooseMoveMinimax () {
     	GameCell bestMove = null;
     	ArrayList<GameCell> checkMoves = new ArrayList<GameCell>(emptyCells);
@@ -427,7 +432,7 @@ public class TicTacToeGame {
 	 */
 	private ArrayList<GameCell> getForkMoves(Player player) {
 		ArrayList<GameCell> possibleForks = new ArrayList<GameCell>();
-		GameCell center = allCells[centerID];
+		GameCell center = gameBoard[centerID];
 		
 		//Case 1
 		if (center.isPlayedBy(player)) {
@@ -524,7 +529,7 @@ public class TicTacToeGame {
 	private ArrayList<GameCell> makeTwoInARow (Player p) {
 		ArrayList<GameCell> possibleMoves = new ArrayList<GameCell>();
 		
-		GameCell center = allCells[centerID];
+		GameCell center = gameBoard[centerID];
 		
 		if (center.isEmpty()) {
 			//check opposite corners, opposite edges
@@ -595,8 +600,11 @@ public class TicTacToeGame {
 	public GameCell chooseMoveNS () {
 		GameCell cellPicked = null;
 		
-		//if opening choose a random move for more fun, to avoid always picking center
-		// (If it is the first move of the game, playing on a corner gives the second player more opportunities to make a mistake and may therefore be the better choice; however, it makes no difference between perfect players.)
+		 /* if opening choose a random move for more fun, to avoid always picking center
+		  * (If it is the first move of the game, playing on a corner gives the second 
+		  * player more opportunities to make a mistake and may therefore be the better 
+		  * choice; however, it makes no difference between perfect players.)
+		  */
 		if (! boardIsEmpty()) {
 	
 			 /*********************************************
@@ -674,7 +682,7 @@ public class TicTacToeGame {
 
 	    	//Center: A player marks the center.
 			if (cellPicked == null) {
-				cellPicked = allCells[centerID];
+				cellPicked = gameBoard[centerID];
 				if (!cellPicked.isEmpty()) {
 					cellPicked = null;
 				}
@@ -686,7 +694,7 @@ public class TicTacToeGame {
 		    	ArrayList<GameCell> emptyCorners = getEmptyCells(CellType.CORNER);
 		    	ArrayList<GameCell> possibleMoves = new ArrayList<>();
 
-		    	for (GameCell cell : emptyCorners) {
+		    	for (GameCell cell : emptyCells) {
 		    		GameCell oppositeCell = getOppositeCell(cell);
 		    		if (oppositeCell.isPlayedBy(player1)) {
 		    			possibleMoves.add(cell);
@@ -723,7 +731,7 @@ public class TicTacToeGame {
      * 
      *********************************************/
     public boolean isAnimatingPiece() {
-    	for (GameCell cell : allCells) {
+    	for (GameCell cell : gameBoard) {
     		if (cell.isAnimation()) {
     			return true;
     		}
@@ -784,7 +792,6 @@ public class TicTacToeGame {
     		winCells.clear();
     		for (int i = 0; i < 3; i++) {
     			GameCell cell = getGameCell (i, j);
-    			
     			if (cell.isPlayedBy(p)) {
     				winCells.add(cell);
     			} else {
@@ -800,8 +807,7 @@ public class TicTacToeGame {
     	//0, 4, 8
     	winCells.clear();
     	for (int i = 0; i < 9; i=i+4) {
-    		GameCell cell = allCells[i];
-    		
+    		GameCell cell = gameBoard[i];
     		if (cell.isPlayedBy(p)) {
     			winCells.add(cell);
     		} else {
@@ -815,8 +821,8 @@ public class TicTacToeGame {
     	//check right-left diagonal
 		//2, 4, 6
     	winCells.clear();
-    	for (int i = 0; i < 8; i=i+2) {
-    		GameCell cell = allCells[i];
+    	for (int i = 2; i < 8; i=i+2) {
+    		GameCell cell = gameBoard[i];
     		if (cell.isPlayedBy(p)) {
     			winCells.add(cell);
     		} else {
@@ -839,35 +845,11 @@ public class TicTacToeGame {
     private void clearBoard() {
 		emptyCells.clear();
 		winCells.clear();
-		for (GameCell cell : allCells) {
+		for (GameCell cell : gameBoard) {
 			cell.clearPiece();
 			emptyCells.add(cell);
 		}
 	}
-	
-    private void initiate() {
-    	player1 = new Player();
-    	player2 = new Player("o");
-    	
-    	emptyCells = new ArrayList<>();
-    	
-    	//save the gridPane's cell children to avoid having to case Node 
-    	//and avoid dealing with the scene group child for future logic
-    	int i = 0;
-    	for (Node node : gameBoard.getChildren()) {
-    		if (node.getClass() == GameCell.class) {
-    			GameCell cell = (GameCell) node;
-
-    			allCells[i] = cell;
-    			i++;
-    			if (cell.isEmpty()) {
-    				emptyCells.add(cell);
-    			}
-    		}
-    	}
-    	
-    	setSize();
-    }
     
     private void fillCell (GameCell cell) {
     	emptyCells.remove(cell);

@@ -21,6 +21,7 @@ abstract public class GameShape extends StackPane {
 	public GameShape() {
 		this.setMinSize(0, 0);
 		this.setAlignment(Pos.CENTER);
+		this.setVisible(false);
 		playingAnimation = false;
 	}
 	

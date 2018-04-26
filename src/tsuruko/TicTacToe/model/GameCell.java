@@ -13,6 +13,8 @@ import tsuruko.TicTacToe.util.*;
  *********************************************/
 public class GameCell extends StackPane {
 	private GameShape myShape;
+	private Xshape displayX;
+	private Oshape displayO;
 	private Player myPlayer;
 	
 	private boolean isEmpty = true;
@@ -32,18 +34,27 @@ public class GameCell extends StackPane {
      *********************************************/
 	public GameCell() {
 		this.setMinSize(0, 0);
-		index = new IntPair (-1, -1);
-		this.getChildren().clear();
 		isEmpty = true;
-		setType();
-		setNeighbors();
+		
+		displayO = new Oshape(cellWidth, cellHeight);
+		displayX = new Xshape(cellWidth, cellHeight);
+		
+		this.getChildren().add(displayX);
+		this.getChildren().add(displayO);
 	}
 
 	public GameCell(IntPair idx) {
 		this.setMinSize(0, 0);
-		this.index = idx;
-		this.getChildren().clear();
 		isEmpty = true;
+		
+		displayO = new Oshape(cellWidth, cellHeight);
+		displayX = new Xshape(cellWidth, cellHeight);
+		
+		this.getChildren().add(displayX);
+		this.getChildren().add(displayO);
+		
+		this.index = idx;
+		
 		setType();
 		setNeighbors();
 		setStyle();
@@ -58,9 +69,8 @@ public class GameCell extends StackPane {
 		cellWidth = width;
 		cellHeight = height;
 		
-		if (myShape != null) {
-			myShape.setSize(width, height);
-		}
+		displayX.setSize(width, height);
+		displayO.setSize(width, height);
 	}
 	
 	public void setPlayer (Player p) {
@@ -68,7 +78,8 @@ public class GameCell extends StackPane {
 	}
 	
 	public void setColor (Color color) {
-		myShape.setStrokeColor(color);
+		displayX.setStrokeColor(color);
+		displayO.setStrokeColor(color);
 	}
 	
     /*********************************************
@@ -115,7 +126,7 @@ public class GameCell extends StackPane {
 	}
 	
 	
-	//get idx across the board from this one
+	//get index across the board from this one
     public IntPair getOppositeIdx () {
     	int x = getOppositeIdx (index.getX());
     	int y = getOppositeIdx (index.getY());
@@ -132,17 +143,21 @@ public class GameCell extends StackPane {
 		if (isEmpty) {
 			myPlayer = p;
 			if (myPlayer.getPlayerType() == PlayerType.PLAYER2) {
-		        myShape = new Oshape(cellWidth, cellHeight);
+		        myShape = displayO;
 			} else {
-				myShape = new Xshape(cellWidth, cellHeight);
+				myShape = displayX;
 			}
 			isEmpty = false;
-			this.getChildren().add(myShape);
+			myShape.setVisible(true);
 		}
 	}
 	
 	public void clearPiece() {
-		this.getChildren().clear();
+		setColor(Color.BLACK);
+		if (myShape != null) {
+			myShape.setVisible(false);
+			myShape = null;
+		}
 		this.isEmpty = true;
 		this.myPlayer = null;
 	}

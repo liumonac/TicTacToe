@@ -72,6 +72,13 @@ public class Xshape extends GameShape {
      *********************************************/
 	public Timeline startAnimation() {
 		playingAnimation = true;
+		
+	    line.setEndX(0);
+	    line.setEndY(0);
+	    
+	    line2.setEndX(length);
+	    line2.setEndY(0);
+	    
 		final KeyValue xValue1 = new KeyValue(line.endXProperty(), length);
 		final KeyValue yValue1 = new KeyValue(line.endYProperty(), length);
 		final KeyFrame xKeyFrame1 = new KeyFrame(Duration.millis(500), xValue1);

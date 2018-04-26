@@ -47,6 +47,9 @@ public class Oshape extends GameShape {
      *********************************************/
 	public Timeline startAnimation() {
 		playingAnimation = true;
+		
+		circle.setRadius(0);
+		
 		final KeyValue val = new KeyValue(circle.radiusProperty(), radius);
 		final KeyFrame keyFrame = new KeyFrame(Duration.millis(500), val);
 

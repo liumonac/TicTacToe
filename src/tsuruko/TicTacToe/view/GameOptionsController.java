@@ -26,32 +26,32 @@ public class GameOptionsController {
 	 * 
 	 *********************************************/
     @FXML
-    public void handle1Player() {
+    private void handle1Player() {
     	useAi = true;
     }
     
     @FXML
-    public void handle2Players() {
+    private void handle2Players() {
     	useAi = false;
     }
     
     @FXML
-    public void handleDebugOn() {
+    private void handleDebugOn() {
     	mainApp.getGameBoardController().setDebug(true);
     }
     
     @FXML
-    public void handleDebugOff() {
+    private void handleDebugOff() {
     	mainApp.getGameBoardController().setDebug(false);
     }
     
     @FXML
-    public void handleAIModeNS() {
+    private void handleAIModeNS() {
     	mainApp.getGameBoardController().setAiMode(GameOptions.NewellSimon);
     }
     
     @FXML
-    public void handleAIModeMinMax() {
+    private void handleAIModeMinMax() {
     	mainApp.getGameBoardController().setAiMode(GameOptions.MinMax);
     }
     

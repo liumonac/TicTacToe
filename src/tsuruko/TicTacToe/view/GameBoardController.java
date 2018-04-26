@@ -62,16 +62,16 @@ public class GameBoardController {
         	}
         	
         	Node source = (Node) mouseEvent.getSource();
+        	
         	if (source.getClass() == GameCell.class) { 
 	            GameCell clickedCell = (GameCell) mouseEvent.getSource();
-	            
-	        	if (currentGame.processHumanMove(clickedCell)) {
+	            if (currentGame.processHumanMove(clickedCell)) {
 	        		checkGameStatus();
 	        	}
 	        	
         	}
         });
-        
+
         gameBoard.add(cell, colIndex, rowIndex);
     }
     
@@ -81,7 +81,7 @@ public class GameBoardController {
      * 
      *********************************************/
     public void setSize() {
-    	currentGame.setSize();
+    	currentGame.setSize(gameBoard.getWidth(), gameBoard.getHeight());
     }
     
     public void setTurn(String turn) {
