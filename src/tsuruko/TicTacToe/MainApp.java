@@ -19,6 +19,7 @@ public class MainApp extends Application {
     private Stage primaryStage;
     private BorderPane rootLayout;
     private GameBoardController gameController;
+    private GameOptionsController optionsController;  
     
 	/*********************************************
 	 * 
@@ -80,7 +81,7 @@ public class MainApp extends Application {
         
         primaryStage.show();
         
-        showGameOptionsDialog();
+        loadGameOptionsDialog();
     }
 
 	public static void main(String[] args) {
@@ -92,7 +93,7 @@ public class MainApp extends Application {
 	 * Show Dialogs
 	 * 
 	 *********************************************/
-    public void showGameOptionsDialog() {
+	public void loadGameOptionsDialog() {
         try {
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(MainApp.class.getResource("view/gameOptionsDialog.fxml"));
@@ -107,9 +108,9 @@ public class MainApp extends Application {
             dialogStage.setScene(scene);
 
             // Set the person into the controller.
-            GameOptionsController controller = loader.getController();
-            controller.setDialogStage(dialogStage);
-            controller.setMainApp(this);
+            optionsController = loader.getController();
+            optionsController.setDialogStage(dialogStage);
+            optionsController.setMainApp(this);
 
             // Show the dialog and wait until the user closes it
             dialogStage.showAndWait();
@@ -117,6 +118,11 @@ public class MainApp extends Application {
         } catch (IOException e) {
             e.printStackTrace();
         }
+	}
+	
+    public void showGameOptionsDialog() {
+            // Show the dialog and wait until the user closes it
+    	optionsController.getDialogStage().showAndWait();
     }
 	
 	/*********************************************

@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="144.0" prefWidth="300.0" stylesheets="@GameBoardStyle.css" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tsuruko.TicTacToe.view.GameOptionsController">
+<AnchorPane prefHeight="165.0" prefWidth="300.0" stylesheets="@GameBoardStyle.css" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tsuruko.TicTacToe.view.GameOptionsController">
    <children>
       <Button cancelButton="true" layoutX="115.0" layoutY="161.0" mnemonicParsing="false" onMouseClicked="#handleOk" prefWidth="75.0" text="Ok" AnchorPane.bottomAnchor="15.0" AnchorPane.rightAnchor="70.0" />
       <GridPane alignment="CENTER" AnchorPane.topAnchor="30.0">
@@ -27,19 +27,25 @@
         </rowConstraints>
          <children>
             <Label alignment="CENTER_RIGHT" contentDisplay="CENTER" prefWidth="120.0" text="Number of Players:" GridPane.halignment="RIGHT" />
-            <ToggleButton contentDisplay="CENTER" mnemonicParsing="false" onMouseClicked="#handlePlayer1" prefWidth="75.0" selected="true" text="1 Player" GridPane.columnIndex="1" GridPane.halignment="CENTER">
+            <ToggleButton contentDisplay="CENTER" mnemonicParsing="false" onMouseClicked="#handle1Player" prefWidth="75.0" selected="true" text="1 Player" GridPane.columnIndex="1" GridPane.halignment="CENTER">
                <toggleGroup>
                   <ToggleGroup fx:id="NumOfPlayers" />
                </toggleGroup>
             </ToggleButton>
-            <ToggleButton contentDisplay="CENTER" mnemonicParsing="false" onMouseClicked="#handlePlayer2" prefWidth="75.0" text="2 Players" toggleGroup="$NumOfPlayers" GridPane.columnIndex="2" GridPane.halignment="CENTER" />
-            <Label text="Debug:" GridPane.halignment="RIGHT" GridPane.rowIndex="1" />
-            <ToggleButton mnemonicParsing="false" onMouseClicked="#handleDebugOn" prefWidth="75.0" text="ON" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1">
+            <ToggleButton contentDisplay="CENTER" mnemonicParsing="false" onMouseClicked="#handle2Players" prefWidth="75.0" text="2 Players" toggleGroup="$NumOfPlayers" GridPane.columnIndex="2" GridPane.halignment="CENTER" />
+            <Label text="Debug:" GridPane.halignment="RIGHT" GridPane.rowIndex="2" />
+            <ToggleButton mnemonicParsing="false" onMouseClicked="#handleDebugOn" prefWidth="75.0" text="ON" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="2">
                <toggleGroup>
                   <ToggleGroup fx:id="Debug" />
                </toggleGroup>
             </ToggleButton>
-            <ToggleButton mnemonicParsing="false" onMouseClicked="#handleDebugOff" prefWidth="75.0" selected="true" text="OFF" toggleGroup="$Debug" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
+            <ToggleButton mnemonicParsing="false" onMouseClicked="#handleDebugOff" prefWidth="75.0" selected="true" text="OFF" toggleGroup="$Debug" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="2" />
+            <Label text="AI Mode:" GridPane.halignment="RIGHT" GridPane.rowIndex="1" />
+            <ToggleButton mnemonicParsing="false" onMouseClicked="#handleAIModeNS" prefWidth="75.0" selected="true" text="N &amp; S" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1">
+               <toggleGroup>
+                  <ToggleGroup fx:id="ToggleAi" />
+               </toggleGroup></ToggleButton>
+            <ToggleButton mnemonicParsing="false" onMouseClicked="#handleAIModeMinMax" prefWidth="75.0" text="MinMax" toggleGroup="$ToggleAi" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
          </children>
       </GridPane>
       <Label layoutX="20.0" layoutY="14.0" text="Game Options" textAlignment="CENTER" underline="true" AnchorPane.leftAnchor="107.0" AnchorPane.rightAnchor="107.0" AnchorPane.topAnchor="5.0">

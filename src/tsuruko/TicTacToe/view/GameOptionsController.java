@@ -3,14 +3,15 @@ package tsuruko.TicTacToe.view;
 import javafx.fxml.FXML;
 import javafx.stage.Stage;
 import tsuruko.TicTacToe.MainApp;
+import tsuruko.TicTacToe.util.GameOptions;
 
 public class GameOptionsController {
 
     private MainApp mainApp;
     private Stage dialogStage;
     
-    private boolean useComputerPlayer = true;
-
+    private boolean useAi = true;
+    
     public void setMainApp(MainApp mainApp) {
         this.mainApp = mainApp;
     }
@@ -25,13 +26,13 @@ public class GameOptionsController {
 	 * 
 	 *********************************************/
     @FXML
-    public void handlePlayer1() {
-    	useComputerPlayer = true;
+    public void handle1Player() {
+    	useAi = true;
     }
     
     @FXML
-    public void handlePlayer2() {
-    	useComputerPlayer = false;
+    public void handle2Players() {
+    	useAi = false;
     }
     
     @FXML
@@ -44,6 +45,16 @@ public class GameOptionsController {
     	mainApp.getGameBoardController().setDebug(false);
     }
     
+    @FXML
+    public void handleAIModeNS() {
+    	mainApp.getGameBoardController().setAiMode(GameOptions.NewellSimon);
+    }
+    
+    @FXML
+    public void handleAIModeMinMax() {
+    	mainApp.getGameBoardController().setAiMode(GameOptions.MinMax);
+    }
+    
 	
 	/*********************************************
 	 * 
@@ -52,8 +63,17 @@ public class GameOptionsController {
 	 *********************************************/
     @FXML
     private void handleOk() {
-    	mainApp.getGameBoardController().newGame(useComputerPlayer);
+    	mainApp.getGameBoardController().newGame(useAi);
     	dialogStage.close();
+    }
+    
+	/*********************************************
+	 * 
+	 * Getters
+	 * 
+	 *********************************************/
+    public Stage getDialogStage() {
+    	return dialogStage;
     }
     
 }

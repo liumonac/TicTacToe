@@ -8,6 +8,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import tsuruko.TicTacToe.model.TicTacToeGame;
+import tsuruko.TicTacToe.util.GameOptions;
 import tsuruko.TicTacToe.MainApp;
 import tsuruko.TicTacToe.model.GameCell;
 import tsuruko.TicTacToe.model.IntPair;
@@ -17,6 +18,8 @@ public class GameBoardController {
 	private TicTacToeGame currentGame;
     
     private Alert gameMessage = new Alert(AlertType.INFORMATION);
+    
+    GameOptions computerMode = GameOptions.NewellSimon;
     
     @FXML
     private GridPane gameBoard;
@@ -94,18 +97,34 @@ public class GameBoardController {
     public void newGame() {   
     	currentGame.newGame();
     	gameMessage.setTitle("TicTacToe");
+    	
+    	whosTurn.setText(currentGame.getCurrentPlayerTurn());
+    	
+    	currentGame.setAiType(computerMode);
     }
     
-    public void newGame(boolean useComputer) {   
-    	if (useComputer) {
+    public void newGame(boolean useAi ) {   
+    	if (useAi) {
     		toggleAi.setText("AI ON");
     	}
     	
-    	currentGame.newGame(useComputer);
+    	currentGame.newGame(useAi);
+    	gameMessage.setTitle("TicTacToe");
     	
     	whosTurn.setText(currentGame.getCurrentPlayerTurn());
+    	
+    	currentGame.setAiType(computerMode);
     }
 
+    /*********************************************
+     * 
+     * Toggle AI Mode
+     * 
+     *********************************************/
+    public void setAiMode(GameOptions aiMode ) {
+    	computerMode = aiMode;
+    }
+    
     /*********************************************
      * 
      * Private Helper Functions
@@ -129,8 +148,8 @@ public class GameBoardController {
     	checkGameStatus();
     }
     
-    public void setDebug(boolean on) {
-    	if (on) {
+    public void setDebug(boolean debug ) {
+    	if (debug) {
     		toggleAi.setVisible(true);
     		toggleAi.setDisable(false);
     	} else {
