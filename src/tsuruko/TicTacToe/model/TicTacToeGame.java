@@ -2,20 +2,13 @@ package tsuruko.TicTacToe.model;
 
 import java.util.ArrayList;
 import java.util.Random;
-
 import javafx.animation.Timeline;
 import javafx.scene.Node;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import tsuruko.TicTacToe.util.*;
-import tsuruko.TicTacToe.view.GameBoardController;
 
 public class TicTacToeGame {
-	//Reference back to Controller
-	private GameBoardController controller;
-	
 	//Player Variables
     private Player player1;
     private Player player2;
@@ -30,23 +23,11 @@ public class TicTacToeGame {
 	private GameStatus gameStatus = GameStatus.NONE;
     
     //Board Variables
-    private double boardCellWidth = 100;
-    private double boardCellHeight = 100;
-    
-    //avoids having to cast node using getChildren()
+	//avoids having to cast node using getChildren()
     private GameCell[] gameBoard = new GameCell[9];
-
     private ArrayList<GameCell> filledCells = new ArrayList<GameCell>();
     private ArrayList<GameCell> emptyCells = new ArrayList<GameCell>();
     private ArrayList<GameCell> winCells = new ArrayList<GameCell>();
-
-
-    /*********************************************
-     * 
-     * Constants for labeling cell types
-     * 
-     *********************************************/
-    private static final int centerID = 4;
 
     /*********************************************
      * 
@@ -54,32 +35,21 @@ public class TicTacToeGame {
      * 
      *********************************************/
 	public TicTacToeGame() {
-    	player1 = new Player();
-    	player2 = new Player("o");
-    	
-    	emptyCells = new ArrayList<>();
+    	player1 = new Player(PlayerType.PLAYER1);
+    	player2 = new Player(PlayerType.PLAYER2);
 	}
 	
-	public TicTacToeGame(GridPane display, GameBoardController c) {
-    	player1 = new Player();
-    	player2 = new Player("o");
-    	
-    	emptyCells = new ArrayList<>();
-    	
-		controller = c;
+	public TicTacToeGame(GridPane display) {
+    	this();
 
     	//save the gridPane's cell children to avoid having to case Node 
     	//and avoid dealing with the scene group child for future logic
     	int i = 0;
     	for (Node node : display.getChildren()) {
     		if (node.getClass() == GameCell.class) {
-    			GameCell cell = (GameCell) node;
-
-    			gameBoard[i] = cell;
+    			gameBoard[i] = (GameCell) node;
+    			emptyCells.add(gameBoard[i]);
     			i++;
-    			if (cell.isEmpty()) {
-    				emptyCells.add(cell);
-    			}
     		}
     	}
     	
@@ -92,12 +62,13 @@ public class TicTacToeGame {
      * 
      *********************************************/
 	public String getCurrentPlayerTurn() {
-		return currentPlayer.getPlayerName() + "'s Turn " + 
-					"(" + currentPlayer.getPlayerType().toString() + ")";
+		String message = currentPlayer.getName() + "'s Turn ";
+		message = message + "(" + currentPlayer.getShape() + ")";
+		return message;		
 	}
 	
 	public String getGameStatus() {
-		String message = currentPlayer.getPlayerName() + " wins!";
+		String message = currentPlayer.getName() + " wins!";
 		
     	if (useComputerPlayer) {
     		if (currentPlayer.equals(computerPlayer)) {
@@ -121,7 +92,6 @@ public class TicTacToeGame {
      *********************************************/
 	public void newGame(boolean useAi) {
 		useComputerPlayer = useAi;
-
 		newGame();
 	}
 	
@@ -147,8 +117,7 @@ public class TicTacToeGame {
     	}
     	
 		computerPlayer.setPlayerName (useComputerPlayer);
-    	controller.setTurn(getCurrentPlayerTurn());
-    	
+
         GameCell cell = processComputerMove();
         if (cell != null) {
         	Timeline compT = cell.getMyShape().startAnimation();
@@ -184,13 +153,11 @@ public class TicTacToeGame {
 	}
 	
     public void toggleCurrentPlayer() {
-    	controller.setTurn(getCurrentPlayerTurn());
     	if (currentPlayer.equals(player1)) {
     		currentPlayer = player2;
     	} else {
     		currentPlayer = player1;
     	}
-    	controller.setTurn(getCurrentPlayerTurn());
     }
     	
     /*********************************************
@@ -223,18 +190,10 @@ public class TicTacToeGame {
     		});
     		
     		humanT.play();
-    		
     		return true;
     	} else {
-            Alert alert = new Alert(AlertType.ERROR);
-            alert.setTitle("TicTacToe");
-            alert.setHeaderText("Invalid Move");
-            alert.setContentText(cell.getPlayerName() + " already filled that box!");
-
-            alert.showAndWait();
+    		return false;
     	}
-    	
-    	return false;
     }
     
     private GameCell processComputerMove() {
@@ -275,46 +234,36 @@ public class TicTacToeGame {
      * 
      *********************************************/
 	public void setSize(double width, double height) {
-		boardCellWidth = width / 3.0;
-		boardCellHeight = height / 3.0;
+		double cellWidth = width / 3.0;
+		double cellHeight = height / 3.0;
 		
 		for (GameCell cell : gameBoard) {
-			cell.setSize (boardCellWidth, boardCellHeight);
+			cell.setSize (cellWidth, cellHeight);
 		}
 	}
 	
-	public void setAiType(GameOptions useAi) {
-		AiType = useAi;
+	public void setAiType(GameOptions option) {
+		AiType = option;
 	}
-    /*********************************************
-     * 
-     * Game Cell Getters (General)
-     * 
-     *********************************************/
-    public GameCell getGameCell (IntPair coordinates) {
-        return getGameCell(coordinates.getX(), coordinates.getY());
-    }
-
-    public GameCell getGameCell (int row, int column) {
-    	return gameBoard[row*3 + column];
-    }
-    
-    public GameCell getOppositeCell (GameCell cell) {
-    	IntPair coordinates = cell.getOppositeIdx();
-    	GameCell result = getGameCell (coordinates);
-    	return result;
-    }
     
     /*********************************************
      * 
-     * Minimax Algorithm Recursion Helper
+     * AI using Minimax Algorithm with Recursion
+     * 
+     * Recursion Steps:
+     * 1. Terminal state: +10 if computer wins, -10 if human wins, 0 if its a draw
+     * 2. for all of the available moves:
+     * 3. call Minimax function
+     * 4. return the best value
      * 
      *********************************************/
-    private int MinimaxRecurse (int depth, Player player, GameCell tryMove, ArrayList<GameCell> movesLeft) {
-    	tryMove.playPiece(player);
+    private int MinimaxRecurse (Player player, int idx, ArrayList<GameCell> movesLeft) {
+    	if (movesLeft.isEmpty()) {
+    		return 0;
+    	}
     	
-    	//for debugging
-    	depth = depth + 1;
+    	GameCell tryMove = movesLeft.get(idx);
+    	tryMove.playPiece(player);
 
     	if (playerHasWon(humanPlayer)) {
     		tryMove.clearPiece();
@@ -331,18 +280,15 @@ public class TicTacToeGame {
     	ArrayList<GameCell> availableMoves = new ArrayList<GameCell> (movesLeft);
     	availableMoves.remove(tryMove);
     	
-    	//pick best move of the loop
-    	//if computer player pick 10
-    	//if human pick -10
     	int result = 0;
-    	for (GameCell cell : availableMoves) {
+    	for (int i = 0; i < availableMoves.size(); i++) {
     		if (player.equals(computerPlayer)) {
-    			int score = MinimaxRecurse (depth, humanPlayer, cell, availableMoves);
+    			int score = MinimaxRecurse (humanPlayer, i, availableMoves);
     			if (score < result) {
     				result = score;
     			}
     		} else {
-    			int score = MinimaxRecurse (depth, computerPlayer, cell, availableMoves);
+    			int score = MinimaxRecurse (computerPlayer, i, availableMoves);
     			if (score > result) {
     				result = score;
     			}
@@ -350,31 +296,59 @@ public class TicTacToeGame {
     	}
     	tryMove.clearPiece();
     	return result;
-
+    }
+    
+    public GameCell chooseMoveMinimax () {
+    	GameCell bestMove = null;
+    	
+		//if opening move choose a random move for more fun
+		if (filledCells.isEmpty()) {
+			bestMove = pickRandomCell(emptyCells);
+		} else {
+	    	int currentScore = -100;
+	    	
+	    	for (int i = 0; i < emptyCells.size(); i++) {
+	    		int score = MinimaxRecurse (computerPlayer, i, emptyCells);
+	    		if (score > currentScore) {
+	    			currentScore = score;
+	    			bestMove = emptyCells.get(i);
+	    		}
+	    	}
+		}
+		
+		return bestMove;
     }
 
     /*********************************************
      * 
-     * AI using Minimax Algorithm
+     * Game Cell Getter Helpers
      * 
      *********************************************/
-    public GameCell chooseMoveMinimax () {
-    	GameCell bestMove = null;
-    	ArrayList<GameCell> checkMoves = new ArrayList<GameCell>(emptyCells);
-    	
-    	int currentScore = -100;
-    	
-    	for (GameCell cell : emptyCells) {
-    		int score = MinimaxRecurse (0, computerPlayer, cell, checkMoves);
-    		if (score > currentScore) {
-    			currentScore = score;
-    			bestMove = cell;
-    		}
-    	}
-    	
-		return bestMove;
+    private GameCell getGameCell (IntPair coordinates) {
+        return getGameCell(coordinates.getX(), coordinates.getY());
+    }
+
+    private GameCell getGameCell (int row, int column) {
+    	return gameBoard[row*3 + column];
     }
     
+    private GameCell getOppositeCell (GameCell cell) {
+    	IntPair coordinates = cell.getOppositeIdx();
+    	GameCell result = getGameCell (coordinates);
+    	return result;
+    }
+    
+	//Helper function for randomizing moves
+	private GameCell pickRandomCell(ArrayList<GameCell> list) {
+		GameCell result = null;
+    	if (!list.isEmpty()) {
+    		Random rand = new Random();
+    		int pickIdx = rand.nextInt(list.size());
+    		result = list.get(pickIdx);
+    	}
+    	
+    	return result;
+	}
 
     /*********************************************
      * 
@@ -382,15 +356,14 @@ public class TicTacToeGame {
      * 
      *********************************************/
 	//helper for finding a winning move
-	//returns null if no winning move exists
 	private GameCell getWinningMove(Player p) {
-		for (GameCell cellIterator : emptyCells) {
-			cellIterator.playPiece(p);
+		for (GameCell cell : emptyCells) {
+			cell.playPiece(p);
         	if (playerHasWon(p)) {
-        		cellIterator.clearPiece();
-        		return cellIterator;
+        		cell.clearPiece();
+        		return cell;
         	} else {
-        		cellIterator.clearPiece();
+        		cell.clearPiece();
         	}
 		}
 		
@@ -432,7 +405,7 @@ public class TicTacToeGame {
 	 */
 	private ArrayList<GameCell> getForkMoves(Player player) {
 		ArrayList<GameCell> possibleForks = new ArrayList<GameCell>();
-		GameCell center = gameBoard[centerID];
+		GameCell center = getGameCell (1, 1);
 		
 		//Case 1
 		if (center.isPlayedBy(player)) {
@@ -500,36 +473,40 @@ public class TicTacToeGame {
 		return possibleForks;
 	}
 	
-	//if this is the second move of the game,
-	//return index of first move played if it was an edge
+
+	 /*********************************************
+	  * If this is the second move of the same, and my first move
+	  * 
+	  * An edge opening must be answered either with a center mark, 
+	  *   a corner mark next to the X, or an edge mark opposite the X. 
+	  *   4 options:
+	  *     Keep games more interesting by randomly picking one of the 4 options
+	  *     instead of always picking center
+	  *********************************************/
 	private GameCell firstMoveEdge () {
 		GameCell result = null;
 
 		if (filledCells.size() == 1) {
-        	if (filledCells.get(0).getCellType() == CellType.EDGE) {
-        		result = filledCells.get(0);
+        	if (filledCells.get(0).isType(CellType.EDGE)) {
+        		GameCell firstMove = filledCells.get(0);
+        		ArrayList<GameCell> possibleMoves = new ArrayList<GameCell>();
+        		
+    			possibleMoves.add(getGameCell (1, 1));
+    			possibleMoves.add(getGameCell (firstMove.getNeighbors().get(0)));
+    			possibleMoves.add(getGameCell (firstMove.getNeighbors().get(1)));
+    			possibleMoves.add(getOppositeCell(firstMove));
+    			
+    			result = pickRandomCell (possibleMoves);
         	}
     	}
 
     	return result;
 	}
 	
-	//Helper function for randomizing moves
-	private GameCell pickRandomCell(ArrayList<GameCell> list) {
-		GameCell result = null;
-    	if (list.size() > 0) {
-    		Random rand = new Random();
-    		int pickIdx = rand.nextInt(list.size());
-    		result =list.get(pickIdx);
-    	}
-    	
-    	return result;
-	}
-	
 	private ArrayList<GameCell> makeTwoInARow (Player p) {
 		ArrayList<GameCell> possibleMoves = new ArrayList<GameCell>();
 		
-		GameCell center = gameBoard[centerID];
+		GameCell center = getGameCell (1, 1);
 		
 		if (center.isEmpty()) {
 			//check opposite corners, opposite edges
@@ -591,48 +568,16 @@ public class TicTacToeGame {
      * AI logic for picking the best move
      * Using Newell and Simon's 1972 tic-tac-toe program Strategy
      * 
-     * 	Grid Indexes
-     * 0,0 | 0,1 | 0,2        0 | 1 | 2
-     * 1,0 | 1,1 | 1,2		  3 | 4 | 5
-     * 2,0 | 2,1 | 2,2	      6 | 7 | 8
      * 
      *********************************************/
 	public GameCell chooseMoveNS () {
 		GameCell cellPicked = null;
+		ArrayList<GameCell> possibleMoves = new ArrayList<>();
 		
-		 /* if opening choose a random move for more fun, to avoid always picking center
-		  * (If it is the first move of the game, playing on a corner gives the second 
-		  * player more opportunities to make a mistake and may therefore be the better 
-		  * choice; however, it makes no difference between perfect players.)
-		  */
-		if (! boardIsEmpty()) {
-	
-			 /*********************************************
-			  * An edge opening must be answered either with a center mark, 
-			  *   a corner mark next to the X, or an edge mark opposite the X. 
-			  *   4 options:
-			  *     Keep games more interesting by randomly picking one of the 4 options
-			  *     instead of always picking center
-			  *********************************************/
-			GameCell firstMove = firstMoveEdge();
-			if (firstMove != null) {
-				Random rand = new Random();
-				int chooseOption = rand.nextInt(4);
-		    	
-		    	cellPicked = getGameCell (1, 1);
-	
-		    	switch (chooseOption) {
-		        	case 0:
-		        		cellPicked = getGameCell (firstMove.getNeighbors().get(0));
-		                break;
-		            case 1:
-		            	cellPicked = getGameCell (firstMove.getNeighbors().get(1));
-		            	break;
-		            case 2:
-		            	cellPicked = getOppositeCell(firstMove);
-		            	break;
-		        }
-			}
+		//if this is not the opening move
+		if (! filledCells.isEmpty()) {
+			//check if this is my first move going second
+			cellPicked = firstMoveEdge();
 			
 			//check if I win with the next move
 			if (cellPicked == null) {
@@ -646,13 +591,13 @@ public class TicTacToeGame {
 
 			//Fork
 			if (cellPicked == null) {
-		    	ArrayList<GameCell> possibleMoves = getForkMoves(computerPlayer);
+				possibleMoves = getForkMoves(computerPlayer);
 		    	cellPicked = pickRandomCell(possibleMoves);
 			}
 
 			//Block an opponent's fork
 			if (cellPicked == null) {
-				ArrayList<GameCell> possibleMoves = getForkMoves (humanPlayer);
+				possibleMoves = getForkMoves (humanPlayer);
 				
 				//Case 1: If there is only one possible fork for the opponent, 
 				//        the player should block it.
@@ -682,21 +627,22 @@ public class TicTacToeGame {
 
 	    	//Center: A player marks the center.
 			if (cellPicked == null) {
-				cellPicked = gameBoard[centerID];
+				cellPicked = getGameCell (1, 1);
 				if (!cellPicked.isEmpty()) {
 					cellPicked = null;
 				}
 			}
 
-			//Opposite corner: If the opponent is in the corner, the player plays the opposite corner.
-	    	//Add functionality to pick a random corner if multiple are already played by opponent
+			//Opposite corner: If the opponent is in the corner, 
+			//                 the player plays the opposite corner.
+	    	//Pick a random corner if multiple are already played by opponent
 			if (cellPicked == null) {
 		    	ArrayList<GameCell> emptyCorners = getEmptyCells(CellType.CORNER);
-		    	ArrayList<GameCell> possibleMoves = new ArrayList<>();
+		    	possibleMoves.clear();
 
-		    	for (GameCell cell : emptyCells) {
+		    	for (GameCell cell : emptyCorners) {
 		    		GameCell oppositeCell = getOppositeCell(cell);
-		    		if (oppositeCell.isPlayedBy(player1)) {
+		    		if (oppositeCell.isPlayedBy(humanPlayer)) {
 		    			possibleMoves.add(cell);
 		    		}
 		    	}
@@ -704,20 +650,21 @@ public class TicTacToeGame {
 		    	cellPicked = pickRandomCell(possibleMoves);
 		    	
 		    	//Empty corner: The player plays in a corner square.
-		    	//Add functionality to pick a random corner if multiple are empty  	
+		    	//Pick a random corner if multiple are empty  	
 		    	if (cellPicked == null) {
 			    	cellPicked = pickRandomCell(emptyCorners);
 		    	}
 			}
 			
 			//Empty side: The player plays in a middle square on any of the 4 sides.
-	    	//Add functionality to pick a random edge if multiple are empty
+	    	//Pick a random edge if multiple are empty
 			if (cellPicked == null) {
-				cellPicked = pickRandomCell(getEmptyCells(CellType.EDGE));
+				possibleMoves = getEmptyCells(CellType.EDGE);
+				cellPicked = pickRandomCell(possibleMoves);
 			}
 		}
 
-		//Catch All: choose a random empty cell
+		//if opening move choose a random move for more fun
 		if (cellPicked == null) {
 			cellPicked = pickRandomCell(emptyCells);
 		}
@@ -738,19 +685,17 @@ public class TicTacToeGame {
     	}
     	return false;
     }
-    
-    public boolean boardIsEmpty() {
-    	if (emptyCells.size() == 9) {
-    		return true;
-    	}
-    	return false;
-    }
-    
+
     public boolean gameOver() {
-    	if (hasWinner()) {
+    	//Win
+    	if (playerHasWon (currentPlayer)) {
+    		for (GameCell cell : winCells) {
+    			cell.setColor (Color.RED);
+    		}
     		gameStatus = GameStatus.WIN;
     		return true;
-    	}
+    	}  	
+    	
     	//Draw
 		if (emptyCells.isEmpty()) {
 			gameStatus = GameStatus.DRAW;
@@ -758,16 +703,7 @@ public class TicTacToeGame {
 		}
     	return false;
     }
-    
-    public boolean hasWinner() {
-    	if (playerHasWon (currentPlayer)) {
-    		for (GameCell cell : winCells) {
-    			cell.setColor (Color.RED);
-    		}
-    		return true;
-    	}
-    	return false;
-    }
+
 
     public boolean playerHasWon (Player p) {
     	//check rows
@@ -803,13 +739,11 @@ public class TicTacToeGame {
     		}
     	}
 
-    	//check left-right diagonal
-    	//0, 4, 8
+    	//check left-right diagonal: indices (0, 4, 8)
     	winCells.clear();
     	for (int i = 0; i < 9; i=i+4) {
-    		GameCell cell = gameBoard[i];
-    		if (cell.isPlayedBy(p)) {
-    			winCells.add(cell);
+    		if (gameBoard[i].isPlayedBy(p)) {
+    			winCells.add(gameBoard[i]);
     		} else {
     			break;
     		}
@@ -818,13 +752,11 @@ public class TicTacToeGame {
 			return true;
 		}
     	
-    	//check right-left diagonal
-		//2, 4, 6
+    	//check right-left diagonal: indices (2, 4, 6)
     	winCells.clear();
     	for (int i = 2; i < 8; i=i+2) {
-    		GameCell cell = gameBoard[i];
-    		if (cell.isPlayedBy(p)) {
-    			winCells.add(cell);
+    		if (gameBoard[i].isPlayedBy(p)) {
+    			winCells.add(gameBoard[i]);
     		} else {
     			break;
     		}
@@ -866,7 +798,7 @@ public class TicTacToeGame {
     	ArrayList<GameCell> filteredCells = new ArrayList<>();
     	
         for (GameCell cell : filledCells) {
-        	if (cell.isPlayedBy(p) && cell.getCellType() == cellType) {
+        	if (cell.isPlayedBy(p) && cell.isType(cellType)) {
         		filteredCells.add(cell);
         	}
         }
@@ -878,7 +810,7 @@ public class TicTacToeGame {
     	ArrayList<GameCell> filteredCells = new ArrayList<>();
     	
         for (GameCell cell : emptyCells) {
-        	if (cell.getCellType() == cellType) {
+        	if (cell.isType(cellType)) {
         		filteredCells.add(cell);
         	}
         }

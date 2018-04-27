@@ -17,6 +17,15 @@ public class Oshape extends GameShape {
     private final Circle circle = new Circle();
     private double radius = 0;
     
+    /*********************************************
+     * 
+     * Constructors
+     * 
+     *********************************************/
+	public Oshape() {
+		super();
+	}
+
 	public Oshape (double width, double height) {
 		super();
 

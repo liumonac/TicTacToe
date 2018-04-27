@@ -11,18 +11,18 @@ public class Player {
      * Constructors
      * 
      *********************************************/
-	public Player () {
-		playerType = PlayerType.PLAYER1;
+	public Player (PlayerType type) {
+		playerType = type;
+		
+		if (playerType == PlayerType.PLAYER1) {
+			this.playerName = "Player 1";
+		} else {
+			this.playerName = "Player 2";
+		}
 	}
 	
-	public Player (String shapeChosen) {
-		if (shapeChosen.equals("O") || shapeChosen.equals("o")) {
-			playerType = PlayerType.PLAYER2;
-			this.playerName = "Player 2";
-		} else {
-			playerType = PlayerType.PLAYER1;
-			this.playerName = "Player 1";
-		}
+	public Player () {
+		this(PlayerType.PLAYER1);
 	}
 	
     /*********************************************
@@ -30,8 +30,12 @@ public class Player {
      * Getters
      * 
      *********************************************/
-	public String getPlayerName () {
+	public String getName () {
 		return playerName;
+	}
+	
+	public String getShape () {
+		return playerType.toString();
 	}
 	
 	public PlayerType getPlayerType () {
@@ -62,7 +66,7 @@ public class Player {
      * 
      *********************************************/
 	public boolean equals (Player p) {
-		if (playerType.equals(p.getPlayerType())) {
+		if (playerType == p.getPlayerType()) {
 			return true;
 		}
 		

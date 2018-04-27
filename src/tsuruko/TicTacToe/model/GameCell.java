@@ -44,14 +44,7 @@ public class GameCell extends StackPane {
 	}
 
 	public GameCell(IntPair idx) {
-		this.setMinSize(0, 0);
-		isEmpty = true;
-		
-		displayO = new Oshape(cellWidth, cellHeight);
-		displayX = new Xshape(cellWidth, cellHeight);
-		
-		this.getChildren().add(displayX);
-		this.getChildren().add(displayO);
+		this();
 		
 		this.index = idx;
 		
@@ -73,10 +66,6 @@ public class GameCell extends StackPane {
 		displayO.setSize(width, height);
 	}
 	
-	public void setPlayer (Player p) {
-		myPlayer = p;
-	}
-	
 	public void setColor (Color color) {
 		displayX.setStrokeColor(color);
 		displayO.setStrokeColor(color);
@@ -89,17 +78,13 @@ public class GameCell extends StackPane {
      *********************************************/
 	public String getPlayerName () {
 		if (myPlayer != null) {
-			return myPlayer.getPlayerName();
+			return myPlayer.getName();
 		}
 		return null;
 	}
 	
 	public IntPair getIdx () {
 		return index;
-	}
-	
-	public CellType getCellType () {
-		return cellType;
 	}
 	
 	public GameShape getMyShape () {
@@ -172,6 +157,13 @@ public class GameCell extends StackPane {
 			return false;
 		}
 		return myPlayer.equals(p);
+	}
+	
+	public boolean isType (CellType type) {
+		if (cellType == type) {
+			return true;
+		}
+		return false;
 	}
 	
 	public boolean isEmpty() {

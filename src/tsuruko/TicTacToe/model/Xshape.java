@@ -21,6 +21,10 @@ public class Xshape extends GameShape {
      * Constructors
      * 
      *********************************************/
+	public Xshape () {
+		super();
+	}
+	
 	public Xshape (double width, double height) {
 		super();
 		
@@ -44,8 +48,8 @@ public class Xshape extends GameShape {
 	    this.getChildren().add(line2);
 	    this.myShape = line;
 	}
-	
-    /*********************************************
+
+	/*********************************************
      * 
      * Setters
      * 
