@@ -424,8 +424,8 @@ public class TicTacToeGame {
 		
 		//Case 2
 		for (GameCell corner : getEmptyCells(CellType.CORNER)) {
-			GameCell n1 = getGameCell(corner.getNeighbors().get(0));
-			GameCell n2 = getGameCell(corner.getNeighbors().get(1));
+			GameCell n1 = getGameCell(corner.getNeighbors()[0]);
+			GameCell n2 = getGameCell(corner.getNeighbors()[1]);
 			if (n1.isPlayedBy(player) && n2.isPlayedBy(player)) {
 				GameCell c1 = getGameCell(n1.getOtherNeighbor(corner.getIdx()));
 				GameCell c2 = getGameCell(n2.getOtherNeighbor(corner.getIdx()));
@@ -438,8 +438,8 @@ public class TicTacToeGame {
 		//Case 3
 		if (center.isPlayedBy(player)) {
 			for (GameCell edge : getFilledCells(player, CellType.EDGE)) {
-				GameCell n1 = getGameCell(edge.getNeighbors().get(0));
-				GameCell n2 = getGameCell(edge.getNeighbors().get(1));
+				GameCell n1 = getGameCell(edge.getNeighbors()[0]);
+				GameCell n2 = getGameCell(edge.getNeighbors()[1]);
 				if (n1.isEmpty() && n2.isEmpty()) {
 					if (getOppositeCell(n1).isEmpty()) {
 						possibleForks.add(n1);
@@ -492,8 +492,8 @@ public class TicTacToeGame {
         		ArrayList<GameCell> possibleMoves = new ArrayList<GameCell>();
         		
     			possibleMoves.add(getGameCell (1, 1));
-    			possibleMoves.add(getGameCell (firstMove.getNeighbors().get(0)));
-    			possibleMoves.add(getGameCell (firstMove.getNeighbors().get(1)));
+    			possibleMoves.add(getGameCell (firstMove.getNeighbors()[0]));
+    			possibleMoves.add(getGameCell (firstMove.getNeighbors()[1]));
     			possibleMoves.add(getOppositeCell(firstMove));
     			
     			result = pickRandomCell (possibleMoves);

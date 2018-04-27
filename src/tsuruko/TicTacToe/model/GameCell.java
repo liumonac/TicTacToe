@@ -1,7 +1,5 @@
 package tsuruko.TicTacToe.model;
 
-import java.util.ArrayList;
-
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import tsuruko.TicTacToe.util.*;
@@ -21,7 +19,7 @@ public class GameCell extends StackPane {
 	private IntPair index;
 	private CellType cellType;
 	
-	ArrayList<IntPair> neighbors = new ArrayList<IntPair>();
+	IntPair neighbors[] = new IntPair[2];
 
 	//cell size control
 	private double cellWidth = 100;
@@ -91,16 +89,26 @@ public class GameCell extends StackPane {
 		return myShape;
 	}
 	
-	public ArrayList<IntPair> getNeighbors () {
+	public IntPair[] getNeighbors () {
 		return neighbors;
 	}
 	
-	//get the neighbor opposite of the one specified
+	/* get the neighbor opposite of the one specified
+	 * i.e.   
+	 * for edge:
+	 *        input | this | return
+	 *          -   |  -   |  -
+	 *          -   |  -   |  -
+	 * for corner:
+	 *        this | return | -
+	 *       input |    -   |  -
+	 *         -   |    -   |  -	
+	*/
 	public IntPair getOtherNeighbor (IntPair p) {
-		if (neighbors.get(0).equals(p)) {
-			return neighbors.get(1);
+		if (neighbors[0].equals(p)) {
+			return neighbors[1];
 		}
-		return neighbors.get(0);
+		return neighbors[0];
 	}
 	
 	public boolean isAnimation () {
@@ -192,25 +200,25 @@ public class GameCell extends StackPane {
 	private void setNeighbors() {
 		if (cellType == CellType.EDGE) {
 			if (index.getX() == 1) {
-				neighbors.add(new IntPair (0, index.getY()));
-				neighbors.add(new IntPair (2, index.getY()));
+				neighbors[0] = new IntPair (0, index.getY());
+				neighbors[1] = new IntPair (2, index.getY());
 			} else {
-				neighbors.add(new IntPair (index.getX(), 0));
-				neighbors.add(new IntPair (index.getX(), 2));
+				neighbors[0] = new IntPair (index.getX(), 0);
+				neighbors[0] = new IntPair (index.getX(), 2);
 			}
 		}
 		
 		if (cellType == CellType.CORNER) {
 			if (index.getX() == 0) {
-				neighbors.add(new IntPair (0, 1));
+				neighbors[0] = new IntPair (0, 1);
 			} else {
-				neighbors.add(new IntPair (2, 1));
+				neighbors[0] = new IntPair (2, 1);
 			}
 			
 			if (index.getY() == 0) {
-				neighbors.add(new IntPair (1, 0));
+				neighbors[1] = new IntPair (1, 0);
 			} else {
-				neighbors.add(new IntPair (1, 2));
+				neighbors[0] = new IntPair (1, 2);
 			}
 		}
 	}
